@@ -28,7 +28,7 @@ public class Verifier {
 	/**
 	 * Temporary variable names used during synthesis.
 	 */
-	private String[] tempVarNames;
+	private String[] synthesisVariableNames;
 	/**
 	 * Variable names as they appear in the formal specification.
 	 */
@@ -107,9 +107,6 @@ public class Verifier {
 	 */
 	private double pctOfPositives;
 	
-	private ArrayList<ArrayList<String>> variances;
-	
-	
 	/**
 	 * Used for RNG.
 	 */
@@ -142,15 +139,15 @@ public class Verifier {
 		Global.setParameter("parallel.enable", "true");
 		
 		//builds tempVarNames and functionCallString
-		tempVarNames = new String[verVarNames.length];
+		//synthesisVariableNames = new String[verVarNames.length];
 		functionCallString = "(" + functionName;
 
 		for (int i = 0; i < verVarNames.length; i++) {
 			functionCallString += " " + verVarNames[i];
-			tempVarNames[i] = "var" + (i+1) + ";";
+			//synthesisVariableNames[i] = "var" + (i+1) + ";";
 		}
 		functionCallString += ")";
-		
+		synthesisVariableNames = verVarNames;
 
 		
 	}
@@ -175,7 +172,7 @@ public class Verifier {
 		//generate the verification query
 		String verificationString = VerificationQueries.generateProgramVerificationQuery(program, counterExamples, logic, functionName, 
 				functionCallString, functionDeclarationString, assertionString, correctTerms, localRestrictions, additionalTerms, definedFunctions, 
-				verVarNames, tempVarNames);
+				verVarNames, synthesisVariableNames);
 		
 
 		//System.out.println(verificationString);
@@ -217,7 +214,7 @@ public class Verifier {
 			//Generate query
 			query = VerificationQueries.generatePredicateQuery(predicate, direction, logic, functionName, repairConstraint, omitDistinctness,
 					targetPartial, functionDeclarationString, assertionString, remainingPartials, localRestrictions, globalConstraints, definedFunctions, 
-					verVarNames, tempVarNames, clauses);
+					verVarNames, synthesisVariableNames, clauses);
 			
 			//Run solver
 			Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
@@ -447,7 +444,7 @@ public class Verifier {
 
 			String query = VerificationQueries.generateProgramVerificationQuery
 					(null, null, logic, functionName, functionCallString, functionDeclarationString,
-							assertionString, partials, coveredAssertions, null, definedFunctions, verVarNames, tempVarNames);
+							assertionString, partials, coveredAssertions, null, definedFunctions, verVarNames, synthesisVariableNames);
 		//	System.out.println(query);
 
 			//open context with try with resources, ensuring it will be closed after try block
@@ -539,7 +536,7 @@ public class Verifier {
 		
 		String query = VerificationQueries.generatePartialMappingQuery(predicate, logic, functionName, repairConstraint, omitDistinctness,
 				targetPartial, functionDeclarationString, assertionString, remainingPartials, localRestrictions, globalConstraints, definedFunctions, 
-				verVarNames, tempVarNames, completeMappingWithRestrictions, clauses);
+				verVarNames, synthesisVariableNames, completeMappingWithRestrictions, clauses);
 		
 		//System.out.println(query);
 		//open context with try with resources, ensuring it will be closed after try block
@@ -668,8 +665,12 @@ public class Verifier {
 		return functionCallString;
 	}
 
-	public String[] getTempVarNames() {
-		return tempVarNames;
+	public String[] getSynthesisVariableNames() {
+		return synthesisVariableNames;
+	}
+
+	public void setSynthesisVariableNames(String[] synthesisVariableNames) {
+		this.synthesisVariableNames = synthesisVariableNames;
 	}
 
 	public String[] getVerVarNames() {
@@ -677,7 +678,6 @@ public class Verifier {
 	}
 
 	public void setVariances(ArrayList<ArrayList<String>> variances) {
-		this.variances = variances;
 	}
 	
 	

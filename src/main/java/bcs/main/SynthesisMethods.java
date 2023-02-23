@@ -95,6 +95,7 @@ public class SynthesisMethods {
 			return new SynthesisResult(false,"",3600);
 		}
 		
+		
 		if (correctPrograms.length == 1) {
 			Instant end = Instant.now();
 			Duration timeElapsed = Duration.between(start, end);
@@ -115,6 +116,13 @@ public class SynthesisMethods {
 		Verifier verifier = new Verifier(benchmark.getFunctionName(),
 				benchmark.getVariableNames(), null, benchmark.getFunString(), benchmark.getAssertionString(), "LIA",
 				null);
+		
+		String[] synthesisVariableNames = new String[verifier.getVerVarNames().length];
+		for (int i = 0; i < verifier.getVerVarNames().length; i++) {
+			synthesisVariableNames[i] = "var" + (i+1) + ";";
+		}
+		
+		verifier.setSynthesisVariableNames(synthesisVariableNames);
 		verifier.setDefinedFunctions(benchmark.getDefinedFunctions());
 		verifier.setVariances(benchmark.getVariances());
 		
@@ -148,8 +156,8 @@ public class SynthesisMethods {
 		}
 		
 		for (int i = 0; i < verifier.getVerVarNames().length; i++) {
-			assertionString = assertionString.replace(verifier.getVerVarNames()[i] + " ", verifier.getTempVarNames()[i] + " ");
-			assertionString = assertionString.replace(verifier.getVerVarNames()[i] + ")", verifier.getTempVarNames()[i] + ")");
+			assertionString = assertionString.replace(verifier.getVerVarNames()[i] + " ", verifier.getSynthesisVariableNames()[i] + " ");
+			assertionString = assertionString.replace(verifier.getVerVarNames()[i] + ")", verifier.getSynthesisVariableNames()[i] + ")");
 		}
 		
 	//	System.out.println(assertionString);
@@ -172,7 +180,7 @@ public class SynthesisMethods {
 		
 		if (variances.size() > 1) {
 			for (int i = 0; i < correctTerms.size(); i++) {
-				correctTerms.set(i, Verifier.transformSIProgramToMI(correctTerms.get(i), variances, verifier.getTempVarNames()));
+				correctTerms.set(i, Verifier.transformSIProgramToMI(correctTerms.get(i), variances, verifier.getSynthesisVariableNames()));
 			}
 		}
 		
