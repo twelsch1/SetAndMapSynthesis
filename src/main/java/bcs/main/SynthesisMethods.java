@@ -38,7 +38,7 @@ public class SynthesisMethods {
 	public static SynthesisResult CEGIS(Synthesizer synthesizer, Benchmark benchmark, SynthesisParameters sp) throws Exception {
 		sp.setEmulateCEGIS(true);
 		Instant start = Instant.now();
-		String[] correctPrograms = SplitAndConquer.SCGPDiscovery(synthesizer, benchmark, sp);
+		String[] correctPrograms = SplitAndCover.SCGPDiscovery(synthesizer, benchmark, sp);
 		if (correctPrograms == null) {
 			return new SynthesisResult(false,"",3600);
 		} else {
@@ -58,7 +58,7 @@ public class SynthesisMethods {
 		
 		Instant start = Instant.now();
 
-		String[] correctPrograms = SplitAndConquer.SCGPDiscovery(partialsSynthesizer, benchmark, sp);
+		String[] correctPrograms = SplitAndCover.SCGPDiscovery(partialsSynthesizer, benchmark, sp);
 		if (correctPrograms == null) {
 			return new SynthesisResult(false,"",3600);
 		}
@@ -84,8 +84,16 @@ public class SynthesisMethods {
 		Instant start = Instant.now();
 		
 		String[] correctPrograms = null;
-		correctPrograms = directProgramExtraction(benchmark);
+		String[] userSynthesisVariableNames = benchmark.getSynthesisVariableNames();
 		
+		String[] extractionVariableNames = new String[benchmark.getVariableNames().length];
+		for (int i = 0; i < benchmark.getVariableNames().length; i++) {
+			extractionVariableNames[i] = "var" + (i+1) + ";";
+		}
+		
+		benchmark.setSynthesisVariableNames(extractionVariableNames);
+		correctPrograms = directProgramExtraction(benchmark);
+		benchmark.setSynthesisVariableNames(userSynthesisVariableNames);
 		/*if (correctPrograms == null) {
 			//System.out.println("Hello");
 			correctPrograms = SplitAndConquer.SCGPDiscovery(partialsSynthesizer, benchmark, sp);
@@ -99,7 +107,12 @@ public class SynthesisMethods {
 		if (correctPrograms.length == 1) {
 			Instant end = Instant.now();
 			Duration timeElapsed = Duration.between(start, end);
-			return new SynthesisResult(true,correctPrograms[0],timeElapsed.toSeconds());
+			
+			String finalProgram = correctPrograms[0];
+			for (int i = 0; i < benchmark.getVariableNames().length; i++) {
+				finalProgram = finalProgram.replace(extractionVariableNames[i], benchmark.getVariableNames()[i]);
+			}
+			return new SynthesisResult(true,finalProgram,timeElapsed.toSeconds());
 		}
 		
 		return BCS.constructMappingsAndUnify(predicateSynthesizer, benchmark, correctPrograms, start, sp);
@@ -117,12 +130,8 @@ public class SynthesisMethods {
 				benchmark.getVariableNames(), null, benchmark.getFunString(), benchmark.getAssertionString(), "LIA",
 				null);
 		
-		String[] synthesisVariableNames = new String[verifier.getVerVarNames().length];
-		for (int i = 0; i < verifier.getVerVarNames().length; i++) {
-			synthesisVariableNames[i] = "var" + (i+1) + ";";
-		}
-		
-		verifier.setSynthesisVariableNames(synthesisVariableNames);
+
+		verifier.setSynthesisVariableNames(benchmark.getSynthesisVariableNames());
 		verifier.setDefinedFunctions(benchmark.getDefinedFunctions());
 		verifier.setVariances(benchmark.getVariances());
 		
@@ -166,7 +175,7 @@ public class SynthesisMethods {
 		if (benchmark.getDefinedFunctionNames() != null) {
 			definedFunctionsSet = new HashSet<String>();
 			for (int i = 0; i < benchmark.getDefinedFunctionNames().length; i++) {
-				System.out.println(benchmark.getDefinedFunctionNames()[i].trim());
+				//System.out.println(benchmark.getDefinedFunctionNames()[i].trim());
 				definedFunctionsSet.add(benchmark.getDefinedFunctionNames()[i].trim());
 			}
 		}

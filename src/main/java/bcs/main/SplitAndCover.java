@@ -14,7 +14,7 @@ import java.util.concurrent.Future;
 import bcs.benchmark.Benchmark;
 import bcs.jobs.SCCallable;
 import bcs.jobs.SCJobResult;
-import bcs.jobs.SplitAndConquerProgramSynthesis;
+import bcs.jobs.SplitAndCoverProgramSynthesis;
 import bcs.synthesizer.SynthesisParameters;
 import bcs.synthesizer.Synthesizer;
 import bcs.utils.Utils;
@@ -25,7 +25,7 @@ import bcs.verification.Verifier;
  * @author Thomas Welsch
  *
  */
-public class SplitAndConquer {
+public class SplitAndCover {
 	
 	public static String[] SCGPDiscovery(Synthesizer partialsSynthesizer, Benchmark benchmark, SynthesisParameters sp) throws Exception {
 		
@@ -39,9 +39,8 @@ public class SplitAndConquer {
 		int additionalTermsPerExtraction = sp.getAdditionalTermsPerExtraction();
 		
 		Instant start = Instant.now();
-		ArrayList<String> partials = new ArrayList<String>();
 
-		PriorityQueue<SplitAndConquerProgramSynthesis> jobsToProcess = new PriorityQueue<>();
+		PriorityQueue<SplitAndCoverProgramSynthesis> jobsToProcess = new PriorityQueue<>();
 
 		ArrayList<String> correctTerms = new ArrayList<>();
 		ArrayList<String> coveringAdditionalTerms = new ArrayList<>();
@@ -49,7 +48,7 @@ public class SplitAndConquer {
 		ArrayList<AdditionalTerm> additionalTerms = new ArrayList<>();
 
 		boolean firstRun = true;
-		SplitAndConquerProgramSynthesis initialJob = new SplitAndConquerProgramSynthesis(null, 2, 0);
+		SplitAndCoverProgramSynthesis initialJob = new SplitAndCoverProgramSynthesis(null, 2, 0);
 		jobsToProcess.add(initialJob);
 
 		boolean keepGoing = true;
@@ -93,7 +92,7 @@ public class SplitAndConquer {
 
 				while (jobsAdded < maxThreads && !jobsToProcess.isEmpty()) {
 
-					SplitAndConquerProgramSynthesis currentJob = jobsToProcess.remove();
+					SplitAndCoverProgramSynthesis currentJob = jobsToProcess.remove();
 					boolean skip = isJobSkippable(verifier, correctTermsAndAdditionalTermsPreRun,
 							currentJob.getExtraAssertions());
 					
@@ -138,7 +137,7 @@ public class SplitAndConquer {
 					result = futures.get(futuresIndex).get();
 				}
 				
-				SplitAndConquerProgramSynthesis currentJob = result.getParentJob();
+				SplitAndCoverProgramSynthesis currentJob = result.getParentJob();
 
 				if (!result.isSuccessful()) {
 					if (result.getChildren() != null) {
@@ -153,7 +152,7 @@ public class SplitAndConquer {
 					// forget about this stuff, just restart with a new job
 					if (emulateCEGIS) {
 						jobsToProcess.clear();
-						jobsToProcess.add(new SplitAndConquerProgramSynthesis(null, 2, 0));
+						jobsToProcess.add(new SplitAndCoverProgramSynthesis(null, 2, 0));
 						futuresIndex += futures.size();
 						continue;
 					}
@@ -289,6 +288,9 @@ public class SplitAndConquer {
 			System.out.println("Term " + (i + 1) + ":" + correctTerms.get(i));
 		}
 		
+		return verifier.reduceToNecessarySet(correctTerms);
+		
+		/*
 		// The following loop eliminates any overlapping terms to prevent
 		// unnecessary work. Similar operation was used in original STUN GP.
 		// Basically, remove one at a time and see if the problem is still unsat and
@@ -324,7 +326,7 @@ public class SplitAndConquer {
 			}
 		}
 
-		return partials.toArray(new String[partials.size()]);
+		return partials.toArray(new String[partials.size()]);*/
 
 	}
 	

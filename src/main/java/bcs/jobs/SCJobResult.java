@@ -8,11 +8,11 @@ package bcs.jobs;
 public class SCJobResult {
 
 	private boolean successful;
-	private SplitAndConquerProgramSynthesis parentJob;
-	private SplitAndConquerProgramSynthesis[] children = null;
+	private SplitAndCoverProgramSynthesis parentJob;
+	private SplitAndCoverProgramSynthesis[] children = null;
 	private String program;
 	
-	public SCJobResult(boolean successful, SplitAndConquerProgramSynthesis parentJob, SplitAndConquerProgramSynthesis[] children, String program) {
+	public SCJobResult(boolean successful, SplitAndCoverProgramSynthesis parentJob, SplitAndCoverProgramSynthesis[] children, String program) {
 		this.successful = successful;
 		this.parentJob = parentJob;
 		this.children = children;
@@ -28,19 +28,19 @@ public class SCJobResult {
 		this.successful = successful;
 	}
 
-	public SplitAndConquerProgramSynthesis getParentJob() {
+	public SplitAndCoverProgramSynthesis getParentJob() {
 		return parentJob;
 	}
 
-	public void setParentJob(SplitAndConquerProgramSynthesis parentJob) {
+	public void setParentJob(SplitAndCoverProgramSynthesis parentJob) {
 		this.parentJob = parentJob;
 	}
 
-	public SplitAndConquerProgramSynthesis[] getChildren() {
+	public SplitAndCoverProgramSynthesis[] getChildren() {
 		return children;
 	}
 
-	public void setChildren(SplitAndConquerProgramSynthesis[] children) {
+	public void setChildren(SplitAndCoverProgramSynthesis[] children) {
 		this.children = children;
 	}
 

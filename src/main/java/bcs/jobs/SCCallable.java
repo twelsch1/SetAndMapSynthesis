@@ -18,7 +18,7 @@ import bcs.verification.Verifier;
  */
 public class SCCallable implements Callable<SCJobResult>  {
 
-	private SplitAndConquerProgramSynthesis parentJob;
+	private SplitAndCoverProgramSynthesis parentJob;
 
 	private ArrayList<String> correctTerms;
 	private ArrayList<String> additionalTerms;
@@ -26,7 +26,7 @@ public class SCCallable implements Callable<SCJobResult>  {
 	private Benchmark benchmark;
 	private boolean verifySuccess;
 	
-	public SCCallable(Synthesizer partialsSynthesizer, Benchmark benchmark, SplitAndConquerProgramSynthesis parentJob,
+	public SCCallable(Synthesizer partialsSynthesizer, Benchmark benchmark, SplitAndCoverProgramSynthesis parentJob,
 			ArrayList<String> correctTerms, ArrayList<String> additionalTerms, boolean verifySuccess) {
 		this.partialsSynthesizer = partialsSynthesizer;
 		this.benchmark = benchmark;
@@ -51,7 +51,7 @@ public class SCCallable implements Callable<SCJobResult>  {
 		
 		SynthesisResult sr = parentJob.run(verifier, partialsSynthesizer);
 		
-		SplitAndConquerProgramSynthesis[] childJobs = null;
+		SplitAndCoverProgramSynthesis[] childJobs = null;
 		
 		if (!sr.isSuccessful() && !sr.getSplit().isEmpty()) {
 				childJobs = parentJob.split(sr.getSplit());
@@ -69,7 +69,7 @@ public class SCCallable implements Callable<SCJobResult>  {
 		return new SCJobResult(sr.isSuccessful(),parentJob,childJobs, sr.getProgramFound());
 	}
 
-	public SplitAndConquerProgramSynthesis getParentJob() {
+	public SplitAndCoverProgramSynthesis getParentJob() {
 		return parentJob;
 	}
 	

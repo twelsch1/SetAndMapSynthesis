@@ -9,7 +9,7 @@ import bcs.verification.Verifier;
  * @author Thomas Welsch
  *
  */
-public class SplitAndConquerProgramSynthesis implements Comparable<SplitAndConquerProgramSynthesis> {
+public class SplitAndCoverProgramSynthesis implements Comparable<SplitAndCoverProgramSynthesis> {
 	
 	
 	private String[] extraAssertions; //the constraints on the input space derived from direct ancestors
@@ -19,7 +19,7 @@ public class SplitAndConquerProgramSynthesis implements Comparable<SplitAndConqu
 	
 	
 	
-	public SplitAndConquerProgramSynthesis(String[] extraAssertions, int tiebreaker, int restarts) {
+	public SplitAndCoverProgramSynthesis(String[] extraAssertions, int tiebreaker, int restarts) {
 		this.extraAssertions = extraAssertions;
 		this.tiebreaker = tiebreaker;	
 		this.restarts = restarts;
@@ -30,8 +30,8 @@ public class SplitAndConquerProgramSynthesis implements Comparable<SplitAndConqu
 		return partialsSynthesizer.synthesize(verifier);
 	}
 	
-	public SplitAndConquerProgramSynthesis[] split(String pred) {
-		   SplitAndConquerProgramSynthesis[] childJobs = new SplitAndConquerProgramSynthesis[2];
+	public SplitAndCoverProgramSynthesis[] split(String pred) {
+		   SplitAndCoverProgramSynthesis[] childJobs = new SplitAndCoverProgramSynthesis[2];
 		
 		   String[] parentAssertions = this.getExtraAssertions();
 		   
@@ -47,8 +47,8 @@ public class SplitAndConquerProgramSynthesis implements Comparable<SplitAndConqu
 		   lhsAssertions[parentAssertions.length] = pred;
 		   rhsAssertions[parentAssertions.length] = "(not " + pred + ")";
 		   
-		   childJobs[0] = new SplitAndConquerProgramSynthesis(lhsAssertions, 1,this.restarts);
-		   childJobs[1] = new SplitAndConquerProgramSynthesis(rhsAssertions, 0,this.restarts);
+		   childJobs[0] = new SplitAndCoverProgramSynthesis(lhsAssertions, 1,this.restarts);
+		   childJobs[1] = new SplitAndCoverProgramSynthesis(rhsAssertions, 0,this.restarts);
 		   
 		
 		   return childJobs;
@@ -86,7 +86,7 @@ public class SplitAndConquerProgramSynthesis implements Comparable<SplitAndConqu
 
 
 	@Override
-	public int compareTo(SplitAndConquerProgramSynthesis comp) {
+	public int compareTo(SplitAndCoverProgramSynthesis comp) {
 		int priorityCheck = 0;
 		
 		//check depth first, if equal, go to the tiebreaker
