@@ -532,29 +532,24 @@ public class Verifier {
 	}
 	
 	public boolean isPositiveMapping(String predicate, String completeMappingWithRestrictions) {
-
-		
-		String query = VerificationQueries.generatePartialMappingQuery(predicate, logic, functionName, repairConstraint, omitDistinctness,
-				targetPartial, functionDeclarationString, assertionString, remainingPartials, localRestrictions, globalConstraints, definedFunctions, 
-				verVarNames, synthesisVariableNames, completeMappingWithRestrictions, clauses);
-		
-		//System.out.println(query);
-		//open context with try with resources, ensuring it will be closed after try block
-		try(Context ctx = new Context()) {
+		//initialize solver and params from the context
+		try (Context ctx = new Context()){
 			
-			//Initialize solver from context
 			Solver solver = ctx.mkSolver();
-			//run solver and get the status
-			Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
-
-			//if UNSAT, return true
-			if (status == Status.UNSATISFIABLE) {
+			//Check if Positive Mapping
+			Model inputModel = verifyHalfPredicate(predicate, ctx, solver, true);
+			
+			//if null, means it was a Positive Mapping 
+			if (inputModel == null) {
 				return true;
-			} 
-		} catch (Exception e) {
-		//	System.out.println(e.getMessage());
-			throw e;			
-		} 
+			}
+			
+			
+		} catch(Exception e ) {
+			//error was encountered, set status to UKNOWN and include the exception in the result
+			return false;
+		}
+		
 		
 		//wasn't partial mapping or error encountered, return false
 		return false;

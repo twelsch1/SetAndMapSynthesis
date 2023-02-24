@@ -20,6 +20,7 @@ public class Benchmark {
 	private String assertionString;
 	private String funString;
 	private String[] variableNames;
+	private String[] synthesisVariableNames;
 	private String[] definedFunctions;
 	private String[] definedFunctionNames;
 	private ArrayList<ArrayList<String>> variances;
@@ -65,10 +66,16 @@ public class Benchmark {
 		return logic;
 	}
 	
-	
-
 	public ArrayList<ArrayList<String>> getVariances() {
 		return variances;
+	}
+	
+	public String[] getSynthesisVariableNames() {
+		return synthesisVariableNames;
+	}
+
+	public void setSynthesisVariableNames(String[] synthesisVariableNames) {
+		this.synthesisVariableNames = synthesisVariableNames;
 	}
 
 	public static Benchmark parseBenchmark(String filename) throws Exception {
@@ -187,8 +194,12 @@ public class Benchmark {
 			definedFunctionNamesArr = definedFunctionNames.toArray(new String[definedFunctionNames.size()]);
 
 		}
-		return new Benchmark(functionName, assertionString, funString, variables.toArray(new String[variables.size()]),
+		Benchmark b = new Benchmark(functionName, assertionString, funString, variables.toArray(new String[variables.size()]),
 				definedFunctionsArr, definedFunctionNamesArr,logic, variances);
+		
+		b.setSynthesisVariableNames(variables.toArray(new String[variables.size()]));
+		
+		return b;
 	}
 	
 	private static ArrayList<ArrayList<String>> findVariances(String assertions, String targetFunction) {

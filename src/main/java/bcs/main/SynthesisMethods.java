@@ -69,7 +69,7 @@ public class SynthesisMethods {
 			return new SynthesisResult(true,correctPrograms[0],timeElapsed.toSeconds());
 		}
 		
-		return BCS.synthesizePredicates(predicateSynthesizer, benchmark, correctPrograms, start, sp);
+		return BCS.constructMappingsAndUnify(predicateSynthesizer, benchmark, correctPrograms, start, sp);
 		
 	
 		
@@ -102,7 +102,7 @@ public class SynthesisMethods {
 			return new SynthesisResult(true,correctPrograms[0],timeElapsed.toSeconds());
 		}
 		
-		return BCS.synthesizePredicates(predicateSynthesizer, benchmark, correctPrograms, start, sp);
+		return BCS.constructMappingsAndUnify(predicateSynthesizer, benchmark, correctPrograms, start, sp);
 		
 	
 		
@@ -171,7 +171,7 @@ public class SynthesisMethods {
 			}
 		}
 		
-		System.out.println(assertionString);
+		//System.out.println(assertionString);
 		Node constraintsAsProg = Node.buildNodeFromProgramString(assertionString, definedFunctionsSet);
 		ArrayList<String> correctTerms = constraintsAsProg.extractPossibleIntProgramsPlusMinusOne();
 		

@@ -34,7 +34,7 @@ import bcs.verification.Verifier;
  */
 public class BCS {
 
-	public static SynthesisResult synthesizePredicates(Synthesizer predicateSynthesizer, Benchmark benchmark, 
+	public static SynthesisResult constructMappingsAndUnify(Synthesizer predicateSynthesizer, Benchmark benchmark, 
 			String[] partials, Instant start,
 			SynthesisParameters sp) throws Exception {	
 		
@@ -70,6 +70,7 @@ public class BCS {
 				 null);
 		verifier.setDefinedFunctions(benchmark.getDefinedFunctions());
 		verifier.setSynthType("program");
+		verifier.setSynthesisVariableNames(benchmark.getSynthesisVariableNames());
 		
 		
 		//Initial attempt at synthesis, returns a set of jobs that have correct mappings or null if synthesis times out
@@ -83,6 +84,10 @@ public class BCS {
 		
 		//Build the program to be checked from the completedJobs which among other things contains the partial and corresponding mapping
 		String finalProgram = buildUnifiedProgram(completedJobs);
+		
+		for (int i = 0; i < verifier.getVerVarNames().length; i++) {
+			finalProgram = finalProgram.replace(verifier.getSynthesisVariableNames()[i], verifier.getVerVarNames()[i]);
+		}
 		
 		//Use try with resources to kick off new Z3 context, ensures it is closed after the try
 		try(Context ctx = new Context()) {
@@ -125,6 +130,9 @@ public class BCS {
 				//left hand side and the original program being on the right hand side.
 				finalProgram = "(ite " + repairConstraint + " " + leftProgram + " " + finalProgram + ")";
 				
+				for (int i = 0; i < verifier.getVerVarNames().length; i++) {
+					finalProgram = finalProgram.replace(verifier.getSynthesisVariableNames()[i], verifier.getVerVarNames()[i]);
+				}
 
 				//Confirm it is correct. It should be at this stage, if not there is a bug.
 				vr = verifier.verify(finalProgram, vcp);
@@ -168,7 +176,7 @@ public class BCS {
 
 		
 		for (int i = 0; i < completedJobs.size() - 1; i++) {
-			unifiedProgram += "(ite " + completedJobs.get(i).getCorrectMapping() + " " + completedJobs.get(i).getTargetPartial();
+			unifiedProgram += "(ite " + completedJobs.get(i).getCorrectMapping() + " " + completedJobs.get(i).getTargetPartial() + " ";
 			closingParentheses += ")";
 		}
 
@@ -403,6 +411,7 @@ public class BCS {
 
 			ver.setDefinedFunctions(benchmark.getDefinedFunctions());
 			ver.setPctOfPositives(pctOfPositives);
+			ver.setSynthesisVariableNames(benchmark.getSynthesisVariableNames());
 			
 			if (!globalConstraintsString.isEmpty()) {
 				ver.setGlobalConstraints(globalConstraintsString.split(",,,"));

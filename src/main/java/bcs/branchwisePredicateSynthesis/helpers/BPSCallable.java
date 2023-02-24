@@ -44,6 +44,7 @@ public class BPSCallable implements Callable<BPSJobResult> {
 
 		verifier.setDefinedFunctions(benchmark.getDefinedFunctions());
 		verifier.setPctOfPositives(pctOfPositives);
+		verifier.setSynthesisVariableNames(benchmark.getSynthesisVariableNames());
 		
 		if (!globalConstraintsString.isEmpty()) {
 			verifier.setGlobalConstraints(globalConstraintsString.split(",,,"));
