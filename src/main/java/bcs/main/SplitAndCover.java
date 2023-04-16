@@ -57,7 +57,7 @@ public class SplitAndCover {
 				benchmark.getVariableNames(), null, benchmark.getFunString(), benchmark.getAssertionString(), "LIA",
 				null);
 		verifier.setDefinedFunctions(benchmark.getDefinedFunctions());
-		verifier.setVariances(benchmark.getVariances());
+		verifier.setVariances(benchmark.getInvocations());
 
 		while (keepGoing) {
 

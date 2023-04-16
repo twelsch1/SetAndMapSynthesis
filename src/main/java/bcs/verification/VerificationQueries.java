@@ -151,7 +151,8 @@ public class VerificationQueries {
 		
 		//replace temporary variable names with sygus variable names	
 		for (int i = 0; i < variableNames.length; i++) {
-			retVal = retVal.replace(tempVarNames[i], variableNames[i]);
+			//System.out.println(tempVarNames[i] + " " + variableNames[i]);
+		 retVal = retVal.replace("var" + (i+1) + ";", variableNames[i]);
 		}
 		
 		
@@ -197,6 +198,7 @@ public class VerificationQueries {
 		//assert against the constraints on these specific inputs. Note that it isn't the negation, we want to find a model for our problem
 		//that satisfies the constraints given the inputs.
 		retVal += "(assert " + assertionString + ")\n";
+		
 			
 		return retVal;
 	}
@@ -442,8 +444,11 @@ public class VerificationQueries {
 		
 		//replace temporary variable names with sygus variable names	
 		for (int i = 0; i < variableNames.length; i++) {
-			query = query.replace(tempVarNames[i], variableNames[i]);
+			//System.out.println(tempVarNames[i] + " " + variableNames[i]);
+			query = query.replace("var" + (i+1) + ";", variableNames[i]);
 		}
+		
+		//System.out.println(query);
 		
 		return query;
 	}

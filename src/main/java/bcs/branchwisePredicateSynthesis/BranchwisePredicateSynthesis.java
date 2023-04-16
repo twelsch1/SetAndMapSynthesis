@@ -66,11 +66,18 @@ public class BranchwisePredicateSynthesis implements Comparable<BranchwisePredic
 	
 	public void run(Verifier verifier, Synthesizer predicateSynthesizer, boolean verifySuccess,
 			int completeMappingsFound, String branchwiseMode) throws Exception {
-		
+		//setUpVerifier(verifier);
 		if (branchwiseMode.equals("RBPS")) {
 			runRBPS(verifier, predicateSynthesizer, verifySuccess, completeMappingsFound);
-		} else {
+		} else if (branchwiseMode.equals("CBPS")) {
 			runCBPS(verifier, predicateSynthesizer, verifySuccess, completeMappingsFound);
+		} else {
+			verifier.setTargetPartial(this.targetPartial);
+			SynthesisResult sr = predicateSynthesizer.synthesize(verifier);
+			if (sr.isSuccessful()) {
+				correctMapping = sr.getProgramFound();
+				synthesisFinished = true;
+			}
 		}
 		
 	}
@@ -130,8 +137,10 @@ public class BranchwisePredicateSynthesis implements Comparable<BranchwisePredic
 
 						// Verify that synthesis actually was successful if required
 						if (verifySuccess) {
+							//System.out.println(verifier.getTargetPartial());
 							VerificationResult vr = verifier.verify(sr.getProgramFound());
 							if (vr.getStatus() != Status.UNSATISFIABLE) {
+								System.out.println(sr.getProgramFound());
 								throw new Exception(
 										"Synthesizer returned successful SynthesisResult when programFound is incorrect");
 							}
@@ -141,6 +150,7 @@ public class BranchwisePredicateSynthesis implements Comparable<BranchwisePredic
 						String reducedPred = Reduction.reduceToClausalPositiveMapping(verifier, sr.getProgramFound(),
 								buildLocalRestrictions());
 						positiveMappings.add(reducedPred);
+						//System.out.println(reducedPred);
 						extractPositiveMappingsThenAddToSet(verifier, restrictions.get(restrictions.size()-1));
 						restrictions.remove(restrictions.size() - 1);
 					} else {

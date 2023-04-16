@@ -20,10 +20,13 @@ public class Benchmark {
 	private String assertionString;
 	private String funString;
 	private String[] variableNames;
+	private String[] variableTypes;
+	private String[] functionVariables;
+	private String[] functionVariableTypes;
 	private String[] synthesisVariableNames;
 	private String[] definedFunctions;
 	private String[] definedFunctionNames;
-	private ArrayList<ArrayList<String>> variances;
+	private ArrayList<ArrayList<String>> invocations;
 	private String logic;
 
 	public Benchmark(String functionName, String assertionString, String funString, String[] variableNames,
@@ -35,7 +38,7 @@ public class Benchmark {
 		this.definedFunctions = definedFunctions;
 		this.definedFunctionNames = definedFunctionNames;
 		this.logic = logic;
-		this.variances = variances;
+		this.invocations = variances;
 	}
 
 	public String getFunctionName() {
@@ -66,8 +69,8 @@ public class Benchmark {
 		return logic;
 	}
 	
-	public ArrayList<ArrayList<String>> getVariances() {
-		return variances;
+	public ArrayList<ArrayList<String>> getInvocations() {
+		return invocations;
 	}
 	
 	public String[] getSynthesisVariableNames() {
@@ -76,6 +79,32 @@ public class Benchmark {
 
 	public void setSynthesisVariableNames(String[] synthesisVariableNames) {
 		this.synthesisVariableNames = synthesisVariableNames;
+	}
+	
+	
+
+	public String[] getVariableTypes() {
+		return variableTypes;
+	}
+
+	public void setVariableTypes(String[] variableTypes) {
+		this.variableTypes = variableTypes;
+	}
+
+	public String[] getFunctionVariables() {
+		return functionVariables;
+	}
+
+	public void setFunctionVariables(String[] functionVariables) {
+		this.functionVariables = functionVariables;
+	}
+
+	public String[] getFunctionVariableTypes() {
+		return functionVariableTypes;
+	}
+
+	public void setFunctionVariableTypes(String[] functionVariableTypes) {
+		this.functionVariableTypes = functionVariableTypes;
 	}
 
 	public static Benchmark parseBenchmark(String filename) throws Exception {
@@ -106,6 +135,9 @@ public class Benchmark {
 		String funString = "";
 		String logic = "";
 		ArrayList<String> variables = new ArrayList<>();
+		ArrayList<String> variableTypes = new ArrayList<>();
+		ArrayList<String> functionVariables = new ArrayList<>();
+		ArrayList<String> functionVariableTypes = new ArrayList<>();
 		ArrayList<String> definedFunctions = new ArrayList<>();
 		ArrayList<String> definedFunctionNames = new ArrayList<>();
 		ArrayList<String> constraints = new ArrayList<>();
@@ -130,14 +162,32 @@ public class Benchmark {
 					throw e;
 				}
 
-				funString = s.replace("synth-fun", "define-fun");
+				funString = s.replace("synth-fun", "define-fun").trim();
+
+				
+				
 				funString = funString.substring(0, funString.length() - 1) + " funToken;)";
+				String funVariablesString = funString.substring(funString.indexOf(functionName) + functionName.length(), funString.lastIndexOf("funToken;"));
+				funVariablesString = funVariablesString.substring(0, funVariablesString.lastIndexOf(")")).replace("(", "").replace(")", "");
+
+				try(Scanner scan = new Scanner(funVariablesString)) {
+					while(scan.hasNext()) {
+
+						functionVariables.add(scan.next());
+						functionVariableTypes.add(scan.next());
+					}
+				} catch(Exception e) {
+					e.printStackTrace();
+					throw e;
+				}
+				
+				
+				
 			} else if (s.contains("declare-var")) {
 				try (Scanner scan = new Scanner(s)) {
-					scan.next(); // it's directly after declare-var, for now we don't need to worry about the
-									// type afterwards
-					// though we will need to eventually
+					scan.next(); 
 					variables.add(scan.next());
+					variableTypes.add(scan.next().replace(")", ""));
 				} catch (Exception e) {
 					e.printStackTrace();
 					throw e;
@@ -198,6 +248,10 @@ public class Benchmark {
 				definedFunctionsArr, definedFunctionNamesArr,logic, variances);
 		
 		b.setSynthesisVariableNames(variables.toArray(new String[variables.size()]));
+		b.setVariableTypes(variableTypes.toArray(new String[variableTypes.size()]));
+		b.setFunctionVariables(functionVariables.toArray(new String[functionVariables.size()]));
+		b.setFunctionVariableTypes(functionVariableTypes.toArray(new String[functionVariableTypes.size()]));
+		
 		
 		return b;
 	}

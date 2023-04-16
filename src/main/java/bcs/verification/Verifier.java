@@ -148,7 +148,9 @@ public class Verifier {
 		}
 		functionCallString += ")";
 		synthesisVariableNames = verVarNames;
-
+		//for (int i = 0; i < verVarNames.length; i++) {
+			//synthesisVariableNames[i] = "var" + (i+1) + ";";
+		//}
 		
 	}
 	

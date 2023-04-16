@@ -122,6 +122,56 @@ public class SynthesisMethods {
 		
 	}
 	
+	public static SynthesisResult runProgramExtractionThenPredicateSynthesis(Synthesizer predicateSynthesizer, Benchmark benchmark, 
+			SynthesisParameters sp) throws Exception {	
+		
+
+		
+		Instant start = Instant.now();
+		
+		String[] correctPrograms = null;
+		String[] userSynthesisVariableNames = benchmark.getSynthesisVariableNames();
+		
+		String[] extractionVariableNames = new String[benchmark.getVariableNames().length];
+		for (int i = 0; i < benchmark.getVariableNames().length; i++) {
+			extractionVariableNames[i] = "var" + (i+1) + ";";
+		}
+		
+		benchmark.setSynthesisVariableNames(extractionVariableNames);
+		correctPrograms = directProgramExtraction(benchmark);
+		benchmark.setSynthesisVariableNames(userSynthesisVariableNames);
+		
+		for (int i = 0; i < correctPrograms.length; i++) {
+			System.out.println(correctPrograms[i]);
+		}
+		/*if (correctPrograms == null) {
+			//System.out.println("Hello");
+			correctPrograms = SplitAndConquer.SCGPDiscovery(partialsSynthesizer, benchmark, sp);
+		}*/
+		
+		if (correctPrograms == null) {
+			return new SynthesisResult(false,"",3600);
+		}
+		
+		
+		if (correctPrograms.length == 1) {
+			Instant end = Instant.now();
+			Duration timeElapsed = Duration.between(start, end);
+			
+			String finalProgram = correctPrograms[0];
+			for (int i = 0; i < benchmark.getVariableNames().length; i++) {
+				finalProgram = finalProgram.replace(extractionVariableNames[i], benchmark.getVariableNames()[i]);
+			}
+			return new SynthesisResult(true,finalProgram,timeElapsed.toSeconds());
+		}
+		
+		return BCS.constructMappingsAndUnify(predicateSynthesizer, benchmark, correctPrograms, start, sp);
+		
+	
+		
+		
+	}
+	
 	private static String[] directProgramExtraction(Benchmark benchmark) {
 		
 		ArrayList<String> partials = new ArrayList<>();
@@ -133,10 +183,10 @@ public class SynthesisMethods {
 
 		verifier.setSynthesisVariableNames(benchmark.getSynthesisVariableNames());
 		verifier.setDefinedFunctions(benchmark.getDefinedFunctions());
-		verifier.setVariances(benchmark.getVariances());
+		verifier.setVariances(benchmark.getInvocations());
 		
 		ArrayList<String> varianceCalls = new ArrayList<>();
-		ArrayList<ArrayList<String>> variances = benchmark.getVariances();
+		ArrayList<ArrayList<String>> variances = benchmark.getInvocations();
 		if (variances != null) {
 			for (ArrayList<String> arr : variances) {
 				String fcs = "(" + benchmark.getFunctionName();
