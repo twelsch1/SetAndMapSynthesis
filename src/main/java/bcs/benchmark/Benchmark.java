@@ -26,6 +26,7 @@ public class Benchmark {
 	private String[] synthesisVariableNames;
 	private String[] definedFunctions;
 	private String[] definedFunctionNames;
+	private int[] constants;
 	private ArrayList<ArrayList<String>> invocations;
 	private String logic;
 
@@ -111,8 +112,15 @@ public class Benchmark {
 		File file = new File(filename);
 		String fileContent = Files.readString(file.toPath());
 		
+		
+		
 		//removes any space between ( and characters such that "( func " becomes "(func "
 		fileContent = fileContent.replaceAll("\\(\s+", "(");
+		//fileContent = fileContent.replaceAll("\s+\\)", ")");
+		//System.out.println(fileContent);
+		
+		int[] constants = extractConstants(fileContent);
+		
 		ArrayList<String> subStrings = new ArrayList<>();
 
 		int parenCounter = 0;
@@ -221,16 +229,20 @@ public class Benchmark {
 			}
 			assertionString += ")";
 		}
+		
+		
 
 		//System.out.println(assertionString);
 		assertionString = Node.formatProgramStringForNode(assertionString);
-		ArrayList<ArrayList<String>> variances = findVariances(assertionString,"("+ functionName + " ");
+		ArrayList<ArrayList<String>> invocations = findInvocations(assertionString,"("+ functionName + " ");
 		
+		
+		//System.out.println("Hi");
 		//String[] tmpVars = {"tmpvar1;", "tmpvar2;"};
 		//String prog = "(- tmpvar1; tmpvar2;)";
 		
 		//System.out.println(transformSIProgramToMI(prog, variances, tmpVars));
-		if (variances == null) {
+		if (invocations == null) {
 			throw new Exception("Unsupported Benchmark");
 		}
 		// System.out.println(assertionString);
@@ -245,21 +257,37 @@ public class Benchmark {
 
 		}
 		Benchmark b = new Benchmark(functionName, assertionString, funString, variables.toArray(new String[variables.size()]),
-				definedFunctionsArr, definedFunctionNamesArr,logic, variances);
+				definedFunctionsArr, definedFunctionNamesArr,logic, invocations);
 		
-		b.setSynthesisVariableNames(variables.toArray(new String[variables.size()]));
+		//b.setSynthesisVariableNames(variables.toArray(new String[variables.size()]));
 		b.setVariableTypes(variableTypes.toArray(new String[variableTypes.size()]));
 		b.setFunctionVariables(functionVariables.toArray(new String[functionVariables.size()]));
 		b.setFunctionVariableTypes(functionVariableTypes.toArray(new String[functionVariableTypes.size()]));
+		b.setConstants(constants);
+		
+		String[] extractionVariableNames = new String[b.getVariableNames().length];
+		for (int i = 0; i < b.getVariableNames().length; i++) {
+			extractionVariableNames[i] = "var" + (i+1) + ";";
+		}
+		
+		b.setSynthesisVariableNames(extractionVariableNames);
 		
 		
 		return b;
 	}
 	
-	private static ArrayList<ArrayList<String>> findVariances(String assertions, String targetFunction) {
+	public int[] getConstants() {
+		return constants;
+	}
+
+	public void setConstants(int[] constants) {
+		this.constants = constants;
+	}
+
+	private static ArrayList<ArrayList<String>> findInvocations(String assertions, String targetFunction) {
 		
-		ArrayList<ArrayList<String>> variances = new ArrayList<>();
-		HashSet<String> varianceStrings = new HashSet<>();
+		ArrayList<ArrayList<String>> invocations = new ArrayList<>();
+		HashSet<String> invocationStrings = new HashSet<>();
 		String principalString = "";
 
 		String sub = assertions;
@@ -274,7 +302,7 @@ public class Benchmark {
 			
 			String funStringToExtract = Utils.extractNextFunction(sub.substring(idx));
 			//System.out.println("Extracting: " + funStringToExtract);
-			varianceStrings.add(funStringToExtract);
+			invocationStrings.add(funStringToExtract);
 			principalString = funStringToExtract;
 			idx += funStringToExtract.length();
 			sub = sub.substring(idx);
@@ -283,7 +311,7 @@ public class Benchmark {
 		ArrayList<String> principals = extractParameters(principalString.substring(targetFunction.length()));
 		
 		
-		for (String s : varianceStrings) {
+		for (String s : invocationStrings) {
 			ArrayList<String> checkParams = new ArrayList<>();
 			checkParams.addAll(principals);
 			ArrayList<String> params = extractParameters(s.substring(targetFunction.length()));
@@ -296,12 +324,12 @@ public class Benchmark {
 				}
 			}
 			
-			variances.add(params);
+			invocations.add(params);
 		}
 		
 		
 		
-		return variances;
+		return invocations;
 	}
 	
 	private static ArrayList<String> extractParameters(String varianceWithoutLeadingFunction) {
@@ -328,6 +356,54 @@ public class Benchmark {
 		
 		return params;
 		
+	}
+	
+	private static int[] extractConstants(String benchmarkString) {
+		HashSet<Integer> constants = new HashSet<>();
+		String scanString = benchmarkString;
+		constants.add(0);
+		constants.add(1);
+		constants.add(-1);
+		
+		scanString = scanString.replace("(", " ");
+		scanString = scanString.replace(")", " ");
+		
+		
+		try (Scanner scan = new Scanner(scanString)) {
+
+			while (scan.hasNext()) {
+				if (scan.hasNextInt()) {
+					Integer c = scan.nextInt();
+					constants.add(c);
+					
+				} else {
+					scan.next();
+				}
+
+			}
+		}
+		
+		int[] constantsArray = new int[constants.size()];
+		int i = 0;
+		for (Integer c : constants) {
+			constantsArray[i] = c;
+			i++;
+		}
+		
+		
+		return constantsArray;
+		
+	}
+	public static void main(String[] args) throws Exception {
+		String benchmarkFile = "src/main/resources/benchmarks/fg_array_sum_10_15.sl";
+		//String benchmarkFile = "src/main/resources/benchmarks/fg_max4.sl";
+		Benchmark benchmark = Benchmark.parseBenchmark(benchmarkFile);
+		
+		int[] constants = benchmark.getConstants();
+		
+		for (int c : constants) {
+			System.out.println(c);
+		}
 	}
 	
 

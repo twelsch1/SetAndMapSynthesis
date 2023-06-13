@@ -11,6 +11,8 @@ import com.microsoft.z3.Params;
 import com.microsoft.z3.Solver;
 import com.microsoft.z3.Status;
 
+import bcs.multipleInvocation.InvocationsConfiguration;
+
 /**
  * The Verifier class provides a verify function that will return if a program is correct or not on a given input space.
  * Variables such as localRestrictions, correctTerms, additionalTerms, globalConstraints, and repairConstraint can modify
@@ -39,6 +41,7 @@ public class Verifier {
 	private String[] localRestrictions;
 	/**
 	 * Terms (i.e. on LIA, Int programs) that during a run of Split and Conquer were perfect on a restricted input space.
+	 * We are hijacking this for use as the partials on the multiple invocation stuff.
 	 */
 	private String[] correctTerms;
 	/**
@@ -112,7 +115,37 @@ public class Verifier {
 	 */
 	private Random rand;
 	
+	private ArrayList<ArrayList<String>> eqInvocations;
+	private ArrayList<ArrayList<String>> distInvocations;
+	private ArrayList<InvocationsConfiguration> previousConfigurations;
 	
+	
+	
+	
+	public ArrayList<ArrayList<String>> getEqInvocations() {
+		return eqInvocations;
+	}
+
+	public void setEqInvocations(ArrayList<ArrayList<String>> eqInvocations) {
+		this.eqInvocations = eqInvocations;
+	}
+
+	public ArrayList<ArrayList<String>> getDistInvocations() {
+		return distInvocations;
+	}
+
+	public void setDistInvocations(ArrayList<ArrayList<String>> distInvocations) {
+		this.distInvocations = distInvocations;
+	}
+	
+	public ArrayList<InvocationsConfiguration> getPreviousConfigurations() {
+		return previousConfigurations;
+	}
+
+	public void setPreviousConfigurations(ArrayList<InvocationsConfiguration> previousConfigurations) {
+		this.previousConfigurations = previousConfigurations;
+	}
+
 	/**
 	 * Constructor for Verifier. Does standard constructor stuff, also initializes rand, enables parallel Z3 calls globally, and builds tempVarNames.
 	 * @param functionName The name of the target function we are synthesizing e.g. max3.
@@ -174,10 +207,10 @@ public class Verifier {
 		//generate the verification query
 		String verificationString = VerificationQueries.generateProgramVerificationQuery(program, counterExamples, logic, functionName, 
 				functionCallString, functionDeclarationString, assertionString, correctTerms, localRestrictions, additionalTerms, definedFunctions, 
-				verVarNames, synthesisVariableNames);
+				verVarNames, synthesisVariableNames, true);
 		
 
-		//System.out.println(verificationString);
+		System.out.println(verificationString);
 		try {
 			
 			//run the query
@@ -214,10 +247,53 @@ public class Verifier {
 		String query = "";
 		try {
 			//Generate query
-			query = VerificationQueries.generatePredicateQuery(predicate, direction, logic, functionName, repairConstraint, omitDistinctness,
+			query = VerificationQueries.generatePredicateQueryPrevious(predicate, direction, logic, functionName, repairConstraint, omitDistinctness,
 					targetPartial, functionDeclarationString, assertionString, remainingPartials, localRestrictions, globalConstraints, definedFunctions, 
 					verVarNames, synthesisVariableNames, clauses);
 			
+		//	System.out.println(query);
+			//Run solver
+			Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
+
+			//if SAT return model, if UNKNOWN throw an exception
+			if (Status.SATISFIABLE == status) {
+				return solver.getModel();
+			} else if (Status.UNKNOWN == status) {
+				throw new VerificationException(solver.getReasonUnknown() + direction);
+			}
+			
+			//System.out.println(query);
+
+		} catch (VerificationException e) {
+			//System.out.println(query);
+			throw e;
+		} catch (Exception e) {
+			//System.out.println(query);
+			throw e;
+		} finally {
+			//reset the solver for the next verification call
+			solver.reset();
+		}
+
+		//if this has been reached there is no model for a CounterExample, so return null
+		return null;
+
+	}
+	
+	private Model verifyMIHalfPredicate(String predicate, Context ctx, Solver solver, boolean direction) throws VerificationException {
+		String query = "";
+		try {
+			//Generate query
+			/*query = VerificationQueries.generatePredicateQuery(predicate, direction, logic, functionName, repairConstraint, omitDistinctness,
+					targetPartial, functionDeclarationString, assertionString, remainingPartials, localRestrictions, globalConstraints, definedFunctions, 
+					verVarNames, synthesisVariableNames, clauses);*/
+			query = VerificationQueries.generateInterchangeablePredicateQuery(predicate, direction, 
+					targetPartial, logic, functionName, functionCallString, functionDeclarationString, 
+					assertionString, correctTerms, 
+					definedFunctions, verVarNames, synthesisVariableNames, eqInvocations, distInvocations, previousConfigurations
+					);
+			
+			//System.out.println(query);
 			//Run solver
 			Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
 
@@ -269,6 +345,48 @@ public class Verifier {
 				//this line changes the side
 				counterexampleType = !counterexampleType;
 				inputModel = verifyHalfPredicate(predicate, ctx, solver, counterexampleType);
+			}
+			
+			//if still null, means the predicate was correct, so we return as such
+			if (inputModel == null) {
+				//reset the solver for the next verification call
+				return new VerificationResult(null, Status.UNSATISFIABLE);
+			}
+			
+		} catch(Exception e ) {
+			//error was encountered, set status to UKNOWN and include the exception in the result
+			return new VerificationResult(Status.UNKNOWN, e);
+		}
+				
+		//if still going, means we have a CounterExample. Get the input side from the model.
+		int[] inputs = new int[verVarNames.length];
+		for (int i = 0; i < verVarNames.length; i++) {
+			Expr<?> expr = ctx.mkIntConst(verVarNames[i]);
+			inputs[i] = Integer.parseInt(inputModel.eval(expr, true).toString());
+		}
+		
+		//the output side is the counterexampleType that was most recently checked
+		int output = counterexampleType ? 1 : 0;
+		
+		return new VerificationResult(new CounterExample(inputs, output), Status.SATISFIABLE);
+	}
+	
+	private VerificationResult verifyMIPredicate(String predicate, Context ctx, Solver solver) {
+		Model inputModel = null;
+		
+		//Generate rand in [0,1), then pick the direction to check (positive or negative) based off percentage of desired positives
+		double diceRoll = rand.nextDouble();
+		boolean counterexampleType = diceRoll <= pctOfPositives;
+		
+		try {
+			//Check the side assigned based off RNG
+			inputModel = verifyMIHalfPredicate(predicate, ctx, solver, counterexampleType);
+			
+			//if null, means it was correct for that side, so check the other side to see if a CounterExample exists there.
+			if (inputModel == null) {
+				//this line changes the side
+				counterexampleType = !counterexampleType;
+				inputModel = verifyMIHalfPredicate(predicate, ctx, solver, counterexampleType);
 			}
 			
 			//if still null, means the predicate was correct, so we return as such
@@ -409,7 +527,7 @@ public class Verifier {
 		try {
 			if (synthType.equals("program")) {
 
-				System.out.println("Verifying program");
+				 System.out.println("Verifying program");
 				model = verifyProgram(program, ctx, solver, counterExamples);
 				if (model == null) {
 					return new VerificationResult(null, Status.UNSATISFIABLE);
@@ -417,8 +535,12 @@ public class Verifier {
 					return new VerificationResult(getCounterExample(model, ctx, solver), Status.SATISFIABLE);
 				}
 
+			} else if (synthType.equals("MIPred")) {
+				System.out.println("Hmm");
+				return verifyMIPredicate(program, ctx, solver);
 			} else {
-				// if synthType isn't program, run the predicate verification
+				//System.out.println(synthType);
+				// if synthType isn't program or MIPred, run the predicate verification
 				return verifyPredicate(program, ctx, solver);
 			}
 		} catch (Exception e) {
@@ -426,6 +548,336 @@ public class Verifier {
 		}
 		
 		
+	}
+	
+	public boolean verifyProgramCanSatisfy(String program, String[] partials) throws Exception {
+		String query = VerificationQueries.generateProgramCanSatisfyQuery(program, logic, functionName, functionCallString, 
+				functionDeclarationString, assertionString, partials, definedFunctions, verVarNames, synthesisVariableNames, previousConfigurations);
+		
+		//System.out.println("query " + query);
+		try(Context ctx = new Context()) {
+			
+			//Initialize solver from context
+			Solver solver = ctx.mkSolver();
+			//run solver and get the status
+			Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
+
+			//if UNSAT, return true
+			if (status == Status.SATISFIABLE) {
+				return true;
+			} else if (status == Status.UNKNOWN) {
+				throw new Exception("Encountered UNKNOWN verification status");
+			}
+		} catch (Exception e) {
+		//	System.out.println(e.getMessage());
+			throw e;			
+		} 
+		
+		
+		return false;
+	}
+	
+	//public boolean verifyProgramCanSatisfy(String program, String[] partials) throws Exception {
+		//return verifyProgramCanSatisfy(program, partials, null);
+	//}
+	
+	public boolean verifyInterchangeableConfiguration(String program, String[] partials) throws Exception {
+		//String query = VerificationQueries.generateProgramCanSatisfyQuery(program, logic, functionName, functionCallString, 
+			//	functionDeclarationString, assertionString, partials, definedFunctions, verVarNames, synthesisVariableNames, invocations, programsByInvocation,
+				//distinctInvocation, diProgram);
+		
+		String query = VerificationQueries.generateInterchangeableConstructionQuery(
+				program, logic, functionName, functionCallString, 
+				functionDeclarationString, assertionString, partials, definedFunctions, verVarNames, synthesisVariableNames, eqInvocations, distInvocations,
+				previousConfigurations);
+		System.out.println(query);
+		try(Context ctx = new Context()) {
+			
+			//Initialize solver from context
+			Solver solver = ctx.mkSolver();
+			//run solver and get the status
+			Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
+
+			//if SAT, return true
+			if (status == Status.SATISFIABLE) {
+				return true;
+			} else if (status == Status.UNKNOWN) {
+				throw new Exception("Encountered UNKNOWN verification status");
+			}
+		} catch (Exception e) {
+		//	System.out.println(e.getMessage());
+			throw e;			
+		} 
+		
+		
+		return false;
+	}
+	
+	public boolean verifyProgramEligible(String program, ArrayList<String> programsFoundSoFar, String[] partials) throws Exception {
+
+		
+		//String query = VerificationQueries.generateDistinctProgramCanSatisfyQuery(program, programsFoundSoFar, logic,
+			//	functionName, functionCallString, functionDeclarationString, assertionString, partials,
+				//definedFunctions, verVarNames, synthesisVariableNames);
+		//System.out.println(query);
+		
+		String query = "";
+		try(Context ctx = new Context()) {
+			
+			//Initialize solver from context
+			Solver solver = ctx.mkSolver();
+			//run solver and get the status
+			Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
+
+			//if SAT, return true
+			if (status == Status.SATISFIABLE) {
+				return true;
+			} else if (status == Status.UNKNOWN) {
+				throw new Exception("Encountered UNKNOWN verification status");
+			}
+		} catch (Exception e) {
+		//	System.out.println(e.getMessage());
+			throw e;			
+		} 
+		
+		
+		return false;
+	}
+	
+	
+	public boolean verifyProgramEligibleActual(String program, ArrayList<String> programsFoundSoFar, ArrayList<String> partials, ArrayList<InvocationsConfiguration> configurations) throws Exception {
+
+		
+		
+		String query = VerificationQueries.generateDistinctProgramCanSatisfyQuery(program, programsFoundSoFar, 
+				partials, configurations,
+				logic, functionName, functionCallString, functionDeclarationString, assertionString,
+				definedFunctions, verVarNames, synthesisVariableNames);
+		
+		//System.out.println(query);
+		try(Context ctx = new Context()) {
+			
+			//Initialize solver from context
+			Solver solver = ctx.mkSolver();
+			//run solver and get the status
+			Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
+
+			//if SAT, return true
+			if (status == Status.SATISFIABLE) {
+				return true;
+			} else if (status == Status.UNKNOWN) {
+				throw new Exception("Encountered UNKNOWN verification status");
+			}
+		} catch (Exception e) {
+		//	System.out.println(e.getMessage());
+			throw e;			
+		} 
+		
+		
+		return false;
+	}
+	
+	
+public boolean verifyProgramCanSatisfyDistinct(String program, ArrayList<String> partials, ArrayList<InvocationsConfiguration> configurations) throws Exception {
+
+		
+		String query = VerificationQueries.generateDistinctProgramCanSatisfyQueryActual(program, partials, configurations,
+				logic, functionName, functionCallString, functionDeclarationString, assertionString, definedFunctions, verVarNames, synthesisVariableNames);
+		
+		
+		//System.out.println(query);
+		try(Context ctx = new Context()) {
+			
+			//Initialize solver from context
+			Solver solver = ctx.mkSolver();
+			//run solver and get the status
+			Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
+
+			//if SAT, return true
+			if (status == Status.SATISFIABLE) {
+				return true;
+			} else if (status == Status.UNKNOWN) {
+				throw new Exception("Encountered UNKNOWN verification status");
+			}
+		} catch (Exception e) {
+		//	System.out.println(e.getMessage());
+			throw e;			
+		} 
+		
+		
+		return false;
+	}
+
+public boolean verifyDistinctConfigurationCanSatisfy(String program,
+		ArrayList<ArrayList<String>> eqInvocations, ArrayList<ArrayList<String>> distInvocations,
+		ArrayList<String> partials, ArrayList<InvocationsConfiguration> configurations) throws Exception {
+
+	String query = VerificationQueries.generateConstructDistinctProgramQueryActual(program, eqInvocations, distInvocations, partials, configurations, 
+			logic, functionName, functionCallString, functionDeclarationString, assertionString, definedFunctions, verVarNames, synthesisVariableNames);
+	
+	//System.out.println(query);
+	try(Context ctx = new Context()) {
+		
+		//Initialize solver from context
+		Solver solver = ctx.mkSolver();
+		//run solver and get the status
+		Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
+
+		//if SAT, return true
+		if (status == Status.SATISFIABLE) {
+			return true;
+		} else if (status == Status.UNKNOWN) {
+			throw new Exception("Encountered UNKNOWN verification status");
+		}
+	} catch (Exception e) {
+	//	System.out.println(e.getMessage());
+		throw e;			
+	} 
+	
+	
+	return false;
+}
+
+	public boolean verifyProgramCanReplace(String program, ArrayList<String> replacementInvocation, String replacementProgram,
+			String[] partials, InvocationsConfiguration config) throws Exception {
+		
+		String query = VerificationQueries.generateConstructDistinctProgramQuery(program, replacementInvocation, replacementProgram, logic, functionName, 
+				functionCallString, functionDeclarationString, assertionString, partials, definedFunctions, verVarNames,
+				synthesisVariableNames, config);
+		//System.out.println(query);
+		try(Context ctx = new Context()) {
+			
+			//Initialize solver from context
+			Solver solver = ctx.mkSolver();
+			//run solver and get the status
+			Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
+
+			//if UNSAT, return true
+			if (status == Status.UNSATISFIABLE) {
+				return true;
+			} else if (status == Status.UNKNOWN) {
+				throw new Exception("Encountered UNKNOWN verification status");
+			}
+		} catch (Exception e) {
+		//	System.out.println(e.getMessage());
+			throw e;			
+		} 
+		
+		
+		return false;
+	}
+	
+	public boolean verifyProgramCanReplaceActual(InvocationsConfiguration configToCheck,
+			ArrayList<String> partials,
+			ArrayList<InvocationsConfiguration> configurations) throws Exception {
+		
+		String query = VerificationQueries.generateCheckReplacementQuery(configToCheck, partials, configurations, logic, functionName, 
+				functionCallString, functionDeclarationString, assertionString, definedFunctions, verVarNames, synthesisVariableNames);
+				
+		//System.out.println(query);
+		try(Context ctx = new Context()) {
+			
+			//Initialize solver from context
+			Solver solver = ctx.mkSolver();
+			//run solver and get the status
+			Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
+
+			//if UNSAT, return true
+			if (status == Status.UNSATISFIABLE) {
+				return true;
+			} else if (status == Status.UNKNOWN) {
+				throw new Exception("Encountered UNKNOWN verification status");
+			}
+		} catch (Exception e) {
+		//	System.out.println(e.getMessage());
+			throw e;			
+		} 
+		
+		
+		return false;
+	}
+	
+	public boolean verifyIsAlwaysDistinct(ArrayList<String> distinctProgramsSoFar, String compProgram, ArrayList<String> unfixedVariables) throws Exception {
+		
+		String query = VerificationQueries.generateAlwaysDistinctQuery(distinctProgramsSoFar, compProgram, unfixedVariables, logic, definedFunctions, verVarNames, synthesisVariableNames);
+				
+		//System.out.println(query);
+		try(Context ctx = new Context()) {
+			
+			//Initialize solver from context
+			Solver solver = ctx.mkSolver();
+			//run solver and get the status
+			Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
+
+			//if UNSAT, return true
+			if (status == Status.UNSATISFIABLE) {
+				return true;
+			} else if (status == Status.UNKNOWN) {
+				throw new Exception("Encountered UNKNOWN verification status");
+			}
+		} catch (Exception e) {
+		//	System.out.println(e.getMessage());
+			throw e;			
+		} 
+		
+		
+		return false;
+	}
+	
+	public boolean verifyProgramIsUnique(String program,
+			ArrayList<String> partials) throws Exception {
+		String[] partialsArray = partials.toArray(new String[partials.size()]); 
+		String query = VerificationQueries.generateIsEqualQuery(program, partialsArray, logic, definedFunctions, verVarNames, synthesisVariableNames);
+		//System.out.println(query);
+		try(Context ctx = new Context()) {
+			
+			//Initialize solver from context
+			Solver solver = ctx.mkSolver();
+			//run solver and get the status
+			Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
+
+			//if SAT, return true
+			if (status == Status.SATISFIABLE) {
+				return true;
+			} else if (status == Status.UNKNOWN) {
+				throw new Exception("Encountered UNKNOWN verification status");
+			}
+		} catch (Exception e) {
+		//	System.out.println(e.getMessage());
+			throw e;			
+		} 
+		
+		
+		return false;
+	}
+	
+	public boolean verifyDistinctConfiguration(String program, String[] partials, InvocationsConfiguration config) throws Exception {
+		
+		String query = VerificationQueries.generateConstructDistinctProgramQuery(program, null, null, logic, functionName, 
+				functionCallString, functionDeclarationString, assertionString, partials, definedFunctions, verVarNames,
+				synthesisVariableNames, config);
+		//System.out.println(query);
+		try(Context ctx = new Context()) {
+			
+			//Initialize solver from context
+			Solver solver = ctx.mkSolver();
+			//run solver and get the status
+			Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
+
+			//if UNSAT, return true
+			if (status == Status.UNSATISFIABLE) {
+				System.out.println("UNSAT");
+				return true;
+			} else if (status == Status.UNKNOWN) {
+				throw new Exception("Encountered UNKNOWN verification status");
+			}
+		} catch (Exception e) {
+		//	System.out.println(e.getMessage());
+			throw e;			
+		} 
+		
+		
+		return false;
 	}
 	
 	/**
@@ -446,7 +898,7 @@ public class Verifier {
 
 			String query = VerificationQueries.generateProgramVerificationQuery
 					(null, null, logic, functionName, functionCallString, functionDeclarationString,
-							assertionString, partials, coveredAssertions, null, definedFunctions, verVarNames, synthesisVariableNames);
+							assertionString, partials, coveredAssertions, null, definedFunctions, verVarNames, synthesisVariableNames, true);
 		//	System.out.println(query);
 
 			//open context with try with resources, ensuring it will be closed after try block
@@ -470,6 +922,48 @@ public class Verifier {
 			return false;
 		}	
 	
+	
+	/**
+	 * Checks if partials cover an input space such that at least one partial in partials is correct for 
+	 * any given input. If coveredAssertions is null, the input space is all inputs, otherwise it is
+	 * the input space covered by coveredAssertions i.e. where each assertion in coveredAssertions is true. 
+	 * @param partials A set of programs to be verified.
+	 * @param coveredAssertions Predicates obtained by splitting that restrict the input space.
+	 * @return True if partials are verified to cover the input space, false otherwise
+	 */
+	public boolean verifyMIPartials(ArrayList<String> partials, ArrayList<String> possiblePrograms,
+			ArrayList<InvocationsConfiguration> configurations) {
+
+			//generate query
+			//String query = VerificationQueries.generatePartialsQuery(partials, coveredAssertions, logic, functionName, functionCallString,
+				//	functionDeclarationString, assertionString, definedFunctions, verVarNames, tempVarNames);
+		
+		
+
+			String query = VerificationQueries.generateMIPartialsQuery(partials, possiblePrograms,  configurations, logic, functionName,
+					functionCallString, functionDeclarationString, assertionString, definedFunctions, verVarNames, synthesisVariableNames);
+			System.out.println(query);
+
+			//open context with try with resources, ensuring it will be closed after try block
+			try(Context ctx = new Context()) {
+				
+				//Initialize solver from context
+				Solver solver = ctx.mkSolver();
+				//run solver and get the status
+				Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
+
+				//if UNSAT, return true
+				if (status == Status.UNSATISFIABLE) {
+					return true;
+				} 
+			} catch (Exception e) {
+			//	System.out.println(e.getMessage());
+				throw e;			
+			} 
+			
+			//wasn't correct, so return false
+			return false;
+		}	
 	/**
 	 * A wrapper of the verify method that sets the extraAssertions and then runs a verify call and returns true
 	 * if the status is UNSAT. Otherwise returns false, including if exceptions are encountered.
@@ -601,6 +1095,66 @@ public class Verifier {
 		return partials.toArray(new String[partials.size()]);
 	}
 	
+	/**
+	 * This procedure reduces the set of partial programs (practically implemented using a list for indexing) found by removing any programs that are unnecessary to achieve unsatisfiability
+	 * on the verifyPartials call.  
+	 * @param partialPrograms
+	 * @return An array representing the set of partials where each program is the only program that is correct for at least one input.
+	 */
+	public String[] MIReduceToNecessarySet(ArrayList<String> partialPrograms, ArrayList<String> possiblePrograms) {
+		
+		// The following loop eliminates any overlapping terms to prevent
+		// unnecessary work. Similar operation was used in original STUN GP.
+		// Basically, remove one at a time and see if the problem is still unsat and
+		// thus the partials still covering. If it is unsat, add the partial to the removedPartials
+		// to flag it for removal and exclude it going forward.
+		ArrayList<Integer> removedPartials = new ArrayList<>();
+		for (int i = 0; i < partialPrograms.size(); i++) {
+			ArrayList<String> prePartials = new ArrayList<>();
+			// build out the partials by index, excluding the current one and ones we have already
+			// flagged for removal
+			for (int j = 0; j < partialPrograms.size(); j++) {
+				//
+				if (i != j && !removedPartials.contains(j)) {
+					prePartials.add(partialPrograms.get(j));
+				}
+			}
+
+			//check if still unsat, if it is then we flag the partial for removal by adding the index 
+			if (this.verifyMIPartials(prePartials, possiblePrograms, null)) {
+					removedPartials.add(i);
+			} 
+			
+		}
+		ArrayList<String> partials = new ArrayList<String>();
+
+		// now that we have the partials flagged by index for removal, we add only the ones
+		// unflagged into final partials to be used for Predicate Synthesis.
+		for (int i = 0; i < partialPrograms.size(); i++) {
+			if (!removedPartials.contains(i)) {
+				partials.add(partialPrograms.get(i));
+			}
+		}
+
+		return partials.toArray(new String[partials.size()]);
+	}
+	
+	public void MIReduceToNecessaryConfigurations(ArrayList<String> partialPrograms, ArrayList<String> possiblePrograms, ArrayList<InvocationsConfiguration> configurations) {
+		
+		int i = 0;
+		while (i < configurations.size()) {
+			InvocationsConfiguration check = configurations.remove(i);
+			
+			//System.out.println("Removing " + check.getMainProgram());
+			if (!this.verifyMIPartials(partialPrograms, possiblePrograms, configurations)) {
+				//System.out.println("Kept");
+				configurations.add(i, check);
+				i++;
+			}
+			
+		}
+
+	}
 	
 	public String getTargetPartial() {
 		return targetPartial;
@@ -683,47 +1237,16 @@ public class Verifier {
 		this.clauses = clauses;
 	}
 
-	public static String transformSIProgramToMI(String SIProgram, ArrayList<ArrayList<String>> variances, String[] tmpVars) {
-		ArrayList<String> conditions = new ArrayList<>();
-		ArrayList<String> transformedPrograms = new ArrayList<>();
-		String retVal = "";
-		
-		for (ArrayList<String> variance : variances) {
-			
-			//variance size will be at least two
-			if (variance.size() == 2) {
-				conditions.add("(>= " + variance.get(0) + " " + variance.get(1) + ")");
-			} else {
-				String condition = "(and";
-				for (int i = 0; i < variance.size()-1; i++) {
-					condition += " (>= " + variance.get(i) + " " + variance.get(i+1) + ")";
-				}
-				condition += ")";
-				conditions.add(condition);
-			}
-			
-			String transformedProgram = SIProgram;
-			for (int i = 0; i < variance.size(); i++) {
-				
-				transformedProgram = transformedProgram.replace(tmpVars[i], variance.get(i));
-			}
-			//System.out.println(transformedProgram);
-			
-			transformedPrograms.add(transformedProgram);
-			
-		}
-		
-		String closingParams = "";
-		for (int i = 0; i < variances.size()-1; i++) {
-			retVal += "(ite " + conditions.get(i) + " " + transformedPrograms.get(i) + " ";
-			closingParams += ")";
-		}
-		
-		retVal += transformedPrograms.get(variances.size()-1) + closingParams;
-		
-		return retVal;
-		
+	public String[] getRemainingPartials() {
+		return remainingPartials;
 	}
+
+	public String[] getGlobalConstraints() {
+		return globalConstraints;
+	}
+
+	
+	
 	
 	
 

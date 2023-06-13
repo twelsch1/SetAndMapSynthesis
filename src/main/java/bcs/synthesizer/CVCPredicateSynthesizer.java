@@ -22,48 +22,127 @@ public class CVCPredicateSynthesizer extends Synthesizer {
 		this.cvcLocation = cvcLocation;
 	}
 
-	private String buildCVCQuery(String targetProgram, Benchmark benchmark) {
+	private String buildCVCQuery(String targetProgram, Benchmark benchmark, String[] remainingPartials, String[] globalConstraints) {
 
+		
+		
+		
+		
 		String targetFunctionString = benchmark.getFunString().replace("funToken;", targetProgram);
+		System.out.println(targetFunctionString);
 
+		String funcName = benchmark.getFunctionName();
+		String parPattern = "(" + funcName;
+		
+		String funString = benchmark.getFunString();
+		String assertionString = benchmark.getAssertionString();
 		String tmp = benchmark.getFunString();
+		System.out.println("FUN STRING " + tmp);
 		tmp = tmp.substring(0, tmp.lastIndexOf(")"));
 		tmp = tmp.substring(0, tmp.lastIndexOf(")"));
 		tmp += ") Bool)";
 		tmp = tmp.replace("define-fun", "synth-fun");
-		tmp = tmp.replace(benchmark.getFunctionName(), "pred");
+		tmp = tmp.replace("synth-fun " + funcName,  "synth-fun pred");
+		System.out.println(tmp);
 
+		
+		String remPartialsDefinitions = "";
+		String remPartialsAssertions = "";
+		
+		
+		if (remainingPartials != null && remainingPartials.length != 0) {
+			
+			remPartialsAssertions = "(or false";
+			for (int i = 0; i < remainingPartials.length; i++) {
+				remPartialsDefinitions += funString.replace("(define-fun " + benchmark.getFunctionName(), 
+						"(define-fun " + funcName + "_remaining_" + i).replace("funToken;",
+						remainingPartials[i]) + "\n";
+				
+				remPartialsAssertions += assertionString.replace(parPattern, parPattern + "_remaining_" + i) + "\n";
+			}
+			
+			remPartialsAssertions += ")";
+			
+			
+
+			
+		}
+		
+		String gcs = "true";
+		
+		if (globalConstraints != null && globalConstraints.length != 0) {
+			gcs = "(and true";
+			for (int i = 0; i < globalConstraints.length; i++) {
+				gcs += " (not " + globalConstraints[i] + ")\n";
+			}
+			
+			gcs += ")";
+		}
+		
+		
+		//System.out.println(remPartialsDefinitions);
+		//System.out.print(remPartialsAssertions);
+		
+		
+		
+		
+		
 		String synthFunctionString = tmp;
 
 		String predicateFunctionInvocation = "(pred";
-		ArrayList<String> firstInvocation = benchmark.getInvocations().get(0);
-		for (int i = 0; i < firstInvocation.size(); i++) {
-			predicateFunctionInvocation += " " + firstInvocation.get(i);
+		String[] principalInvocation = benchmark.getVariableNames();
+		for (int i = 0; i < principalInvocation.length; i++) {
+			predicateFunctionInvocation += " " + principalInvocation[i];
 		}
 
 		predicateFunctionInvocation += ")";
+		
+		
 
 		String query = "(set-logic " + benchmark.getLogic() + ")\n";
-		query += targetFunctionString + "\n";
-		query += synthFunctionString + "\n";
-
 		if (benchmark.getDefinedFunctions() != null) {
 			for (int i = 0; i < benchmark.getDefinedFunctions().length; i++) {
 				query += benchmark.getDefinedFunctions()[i] + "\n";
 			}
 		}
 
+		query += targetFunctionString + "\n";
+		query += synthFunctionString + "\n";
+		//query += remPartialsDefinitions;
+		
+
 		for (int i = 0; i < benchmark.getVariableNames().length; i++) {
 			query += "(declare-var " + benchmark.getVariableNames()[i] + " " + benchmark.getVariableTypes()[i] + ")\n";
 		}
 
+				
 		query += "(constraint (=> " + predicateFunctionInvocation + " " + benchmark.getAssertionString() + "))\n";
+		
+				
 		query += "(constraint (=> (not " + predicateFunctionInvocation + ") " + "(not " + benchmark.getAssertionString()
-				+ ")))\n";
+			+ ")))\n";
+		
+		
+	/*	query += "(constraint (=> " + gcs + " ";
+		query +="(and ";
+		
+		query += "(=> " + predicateFunctionInvocation + " " + benchmark.getAssertionString() + ") \n";
+		
+		query += "(=> (not " + predicateFunctionInvocation + ") " + "(or (not " + benchmark.getAssertionString() + ") " + remPartialsAssertions;
+		query += "))\n";
+				
+		query+= ")";		
+		
+		
+		query += "))";
+		*/
+		
+		
 		query += "(check-synth)";
 
-		for (int i = 0; i < benchmark.getFunctionVariables().length; i++) {
-			query = query.replace("var" + (i + 1) + ";", benchmark.getFunctionVariables()[i]);
+		for (int i = 0; i < benchmark.getVariableNames().length; i++) {
+			
+			query = query.replace("var" + (i + 1) + ";", benchmark.getVariableNames()[i]);
 		}
 
 		//System.out.println(query);
@@ -78,12 +157,26 @@ public class CVCPredicateSynthesizer extends Synthesizer {
 
 		Process process = null;
 		try {
-			process = new ProcessBuilder(cvcLocation, "-L", "sygus")
+			
+			
+			
+			//process = new ProcessBuilder(cvcLocation, "-L", "sygus", "--sygus-si", "all", "sygus-out"
+				//	.start();
+			
+			process = new ProcessBuilder(cvcLocation, "-L", "sygus2", "--sygus-si", "all", "--sygus-out", "status-and-def")
 					.start();
 
-			System.out.println("Partial " + verifier.getTargetPartial());
+
+			//System.out.println(buildCVCQuery(verifier.getTargetPartial(), benchmark));
+			//System.out.println("Partial " + verifier.getTargetPartial());
+			String query = buildCVCQuery(verifier.getTargetPartial(), benchmark, verifier.getRemainingPartials(), verifier.getGlobalConstraints());
+			
+
+			System.out.println(query);
 			try (Writer w = new OutputStreamWriter(process.getOutputStream(), "UTF-8")) {
-				w.write(buildCVCQuery(verifier.getTargetPartial(), benchmark));
+				System.out.println("FIRE!");
+				w.write(query);
+				
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 				throw e;
@@ -94,16 +187,40 @@ public class CVCPredicateSynthesizer extends Synthesizer {
 
 			InputStream is = process.getInputStream();
 			InputStreamReader isr = new InputStreamReader(is);
+			//isr.
+			
 			try (BufferedReader br = new BufferedReader(isr)) {
-				String status = br.readLine();
+				String line;
+				line = br.readLine();
+				System.out.println(line);
+				String cvcResponse = "";
+				while ((line = br.readLine()) != null) {
+				    cvcResponse += line;
+				}
+				
+				System.out.println(cvcResponse);
+				
+				if (!cvcResponse.isEmpty()) {
 
-				//System.out.println(status);
+				program = cvcResponse.substring(cvcResponse.lastIndexOf("Bool") + 4, cvcResponse.length() - 2).trim();
+				success = true;
+				
+				}
+				/*
+				System.out.println(cvcResponse);
+				String status = cvcResponse;
+				System.out.println("Did we get anything? " + status);
+				System.out.println(status);
 				String returnedFunction = "";
 				if (status.equals("unsat")) {
+					
 					returnedFunction = br.readLine();
+					System.out.println("Returned function is " + returnedFunction);
 					success = true;
 					program = returnedFunction.substring(returnedFunction.lastIndexOf("Bool") + 4, returnedFunction.length() - 1).trim();
-				}
+					
+					System.out.println("Returned program was " + program);
+				}*/
 
 
 

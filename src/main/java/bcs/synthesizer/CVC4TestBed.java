@@ -183,20 +183,23 @@ public class CVC4TestBed {
 	
 	public static void main(String[] args) throws Exception {
 		String benchmarkFile = "src/main/resources/benchmarks/fg_max20.sl";
-
+		//String benchmarkFile = "src/main/resources/benchmarks/darkOne.sl";
 		Benchmark benchmark = Benchmark.parseBenchmark(benchmarkFile);
-		String cvcLocation = "C:\\Users\\twels\\Documents\\CVC4\\cvc4-1.7-win64-opt.exe";
-		
+		//String cvcLocation = "C:\\Users\\twels\\Documents\\CVC4\\cvc4-1.7-win64-opt.exe";
+		//String cvcLocation = "C:\\Users\\twels\\Documents\\CVC4\\cvc4-1.8-win64-opt.exe";
+		//String cvcLocation = "C:\\Users\\twels\\Documents\\CVC4\\cvc4-1.8-win64-opt.exe";
+		//String cvcLocation = "C:\\Users\\twels\\Documents\\cvc5\\cvc5.exe";
+		String cvcLocation = "C:\\Users\\twels\\Documents\\cvc5\\cvc5-2021-09-04-win64-opt.exe";
 		Synthesizer synth = new CVCPredicateSynthesizer(benchmark,cvcLocation);
 		
 		SynthesisParameters sp = new SynthesisParameters();
 		sp.setMaxThreads(1);
 		sp.setBranchwiseMode("CVC");
-		//sp.setSkipToRepair(true);
+		sp.setSkipToRepair(true);
 		//sp.setTimeout(2);
 	//	SynthesisResult result = SynthesisMethods.runPartialThenPredicateSynthesis(partialsSynthesizer, predicateSynthesizer,benchmark,sp);
 		//SynthesisResult result = SynthesisMethods.runProgramExtractionThenPredicateSynthesis(synth, benchmark, sp);
-		SynthesisResult result = bcs.main.SynthesisMethods.runProgramExtractionThenPredicateSynthesis(synth, benchmark, sp);
+		SynthesisResult result = bcs.main.SynthesisMethods.runMIProgramExtractionThenPredicateSynthesis(synth, benchmark, sp);
 		//String[] correctPrograms = buildMIStrings();
 		//SynthesisResult result = SynthesisMethods.runPredicateSynthesis(correctPrograms, predicateSynthesizer, benchmark, sp);
 		

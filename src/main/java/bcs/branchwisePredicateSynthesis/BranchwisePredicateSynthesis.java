@@ -73,8 +73,23 @@ public class BranchwisePredicateSynthesis implements Comparable<BranchwisePredic
 			runCBPS(verifier, predicateSynthesizer, verifySuccess, completeMappingsFound);
 		} else {
 			verifier.setTargetPartial(this.targetPartial);
+			verifier.setGlobalConstraints(null);
+			//if (remainingTerms != null && !remainingTerms.isEmpty()) {
+				//verifier.setRemainingPartials(remainingTerms.toArray(new String[remainingTerms.size()]));
+			//}
+			
 			SynthesisResult sr = predicateSynthesizer.synthesize(verifier);
 			if (sr.isSuccessful()) {
+				//verifier
+				VerificationResult vr = verifier.verify(sr.getProgramFound());
+				
+				if (vr.getStatus() != Status.UNSATISFIABLE) {
+					System.out.println(sr.getProgramFound());
+					throw new Exception(
+							"Synthesizer returned successful SynthesisResult when programFound is incorrect");
+				}
+				
+				System.out.println("FML");
 				correctMapping = sr.getProgramFound();
 				synthesisFinished = true;
 			}
@@ -234,7 +249,7 @@ public class BranchwisePredicateSynthesis implements Comparable<BranchwisePredic
 	}
 	
 	public void setUpVerifier(Verifier verifier) {
-		if (!remainingTerms.isEmpty()) {
+		if (remainingTerms != null && !remainingTerms.isEmpty()) {
 			verifier.setRemainingPartials(remainingTerms.toArray(new String[remainingTerms.size()]));
 		}
 

@@ -1,0 +1,30 @@
+parent.0 = definedFunIntParent.params
+
+# We have one function set, of class GPFunctionSet
+gp.fs.size = 1
+gp.fs.0 = ec.gp.GPFunctionSet
+# We'll call the function set "f0".
+gp.fs.0.name = f0
+
+#was 1024
+pop.subpop.0.size = 2500
+
+
+#generations = 50
+generations = 5
+evalthreads = 2
+verificationthreads = 2
+breedthreads = 1
+silent=false
+
+
+#select.tournament.size = 7
+
+#jobs = 10
+
+eval.problem = evoSynthesis.CLIAProblem
+eval.problem.data = datatypes.IntData
+
+# output statistics to the file "out.stat" in the directory
+# the run was started in
+stat.file				$out.stat

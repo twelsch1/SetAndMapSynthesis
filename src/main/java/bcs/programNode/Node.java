@@ -46,7 +46,7 @@ public abstract class Node {
 		for (String s : uniquePrograms) {
 			retVal.add(s);
 			retVal.add("(+ 1 " + s + ")");
-			retVal.add("(- 1 " + s + ")");
+			retVal.add("(- " + s + " 1)");
 
 		}
 		
@@ -155,7 +155,7 @@ public abstract class Node {
 		} else if (definedFunctions != null && funcType.length() > 1 && definedFunctions.contains(funcType.substring(1))) {
 			String function = funcType.substring(1);
 			String type = "int";
-			if (function.equals("iteB") || function.equals("or3")) {
+			if (function.equals("iteB") || function.equals("or3") || function.equals("im")) {
 				type = "boolean";
 			}
 			node = new DefinedFunction(function, type);

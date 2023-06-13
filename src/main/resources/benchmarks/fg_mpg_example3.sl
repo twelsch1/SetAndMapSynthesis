@@ -41,7 +41,7 @@
 ( constraint (  iteB  (>=  ( three-times z)  5  ) 
 		       ( iteB  (  <=  ( two-times x )  y  ) 
 		  	      (  =  ( eq2 x y z ) ( plus4  ( three-times x)  ( minus ( five-times y )) (seven-times z ) 9 ) )
-			        (  =  ( eq2 x y z ) ( plus4 x x  (minus ( nine-times z) ) 5 ) )  
+			        (  =  ( eq2 x y z ) ( plus4 x x (minus ( nine-times z) ) 5 ) )  
 			    )
   		      ( iteB  (  <=  ( two-times z ) ( plus3 (minus y) x x ) ) 
 			      (  =  ( eq2 x y z ) ( plus3  (minus ( six-times x) ) ( three-times y )  4 ) )

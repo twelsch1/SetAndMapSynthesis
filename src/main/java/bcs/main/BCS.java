@@ -20,6 +20,7 @@ import bcs.benchmark.Benchmark;
 import bcs.branchwisePredicateSynthesis.BranchwisePredicateSynthesis;
 import bcs.branchwisePredicateSynthesis.helpers.BPSCallable;
 import bcs.branchwisePredicateSynthesis.helpers.BPSJobResult;
+import bcs.multipleInvocation.MIUtils;
 import bcs.synthesizer.SynthesisParameters;
 import bcs.synthesizer.SynthesisResult;
 import bcs.synthesizer.Synthesizer;
@@ -83,11 +84,27 @@ public class BCS {
 		}
 		
 		//Build the program to be checked from the completedJobs which among other things contains the partial and corresponding mapping
-		String finalProgram = buildUnifiedProgram(completedJobs);
-		
-		for (int i = 0; i < verifier.getVerVarNames().length; i++) {
+		String finalProgram = buildUnifiedProgram(completedJobs, benchmark);
+		System.out.println(finalProgram);
+		/*for (int i = 0; i < verifier.getVerVarNames().length; i++) {
 			finalProgram = finalProgram.replace(verifier.getSynthesisVariableNames()[i], verifier.getVerVarNames()[i]);
+		}*/
+		
+		System.out.println(finalProgram);
+		/*
+		String[] functionVariables = benchmark.getFunctionVariables();
+		ArrayList<String> firstInvocation = benchmark.getInvocations().get(0);
+		for (int i = 0; i < functionVariables.length; i++) {
+			finalProgram = finalProgram.replace(functionVariables[i] + " ", "var" + i + "; " );
+			finalProgram = finalProgram.replace(functionVariables[i] + ")", "var" + i + ";)" );
 		}
+		
+		System.out.println(finalProgram);
+		for (int i = 0; i < firstInvocation.size(); i++) {
+			finalProgram = finalProgram.replace("var" + i + ";", firstInvocation.get(i));
+		}
+		
+		System.out.println(finalProgram);*/
 		
 		//Use try with resources to kick off new Z3 context, ensures it is closed after the try
 		try(Context ctx = new Context()) {
@@ -101,6 +118,10 @@ public class BCS {
 			
 			//System.out.println("Verifying synthesized program");
 			//check if the final program is correct, if it is, set done to true
+			//System.out.println("Final program to be verified: " + finalProgram);
+
+	
+			
 			vr = verifier.verify(finalProgram, vcp);
 			done = vr.getStatus() == Status.UNSATISFIABLE;
 			
@@ -109,7 +130,9 @@ public class BCS {
 				//set successful to true, move onto returning result
 				successful = true;
 			} else {
-				System.out.println("Repair Procedure initiated");
+				System.out.println("Following program didnt work");
+				System.out.println(finalProgram);
+				System.out.println("Repair Procedure initiated ");
 				//Build the repairConstraint, representing the space where ties need to be resolved
 				String repairConstraint = buildRepairConstraint(completedJobs);
 
@@ -124,7 +147,7 @@ public class BCS {
 				}
 				
 				//build the program that is correct when repairConstraint is true
-				String leftProgram = buildUnifiedProgram(completedJobs);
+				String leftProgram = buildUnifiedProgram(completedJobs, benchmark);
 				
 				//Unify the original synthesis attempt, with the program that is correct given repairConstraint on the
 				//left hand side and the original program being on the right hand side.
@@ -164,23 +187,75 @@ public class BCS {
 		
 	}
 	
-	private static String buildUnifiedProgram(ArrayList<BranchwisePredicateSynthesis> completedJobs) {
+	private static String buildUnifiedProgram(ArrayList<BranchwisePredicateSynthesis> completedJobs, Benchmark benchmark) {
 		
 		if (completedJobs == null) {
 			return null;
 		}
 		
+		String[] functionVariables = benchmark.getVariableNames();
+		
+		ArrayList<String> variablesList = new ArrayList<>();
+		for (int i = 0; i < functionVariables.length; i++) {
+			variablesList.add(functionVariables[i]);
+		}
+		ArrayList<String> firstInvocation = benchmark.getInvocations().get(0);
+		String[] synthesisVariables = benchmark.getSynthesisVariableNames();
+		/*for (int i = 0; i < functionVariables.length; i++) {
+			finalProgram = finalProgram.replace(functionVariables[i] + " ", "var" + i + "; " );
+			finalProgram = finalProgram.replace(functionVariables[i] + ")", "var" + i + ";)" );
+		}*/
+		
+		/*
+		System.out.println(finalProgram);
+		for (int i = 0; i < firstInvocation.size(); i++) {
+			finalProgram = finalProgram.replace("var" + i + ";", firstInvocation.get(i));
+		}*/
+		
+		ArrayList<String> mappings = new ArrayList<>();
+		ArrayList<String> partials = new ArrayList<>();
+		for (int i = 0; i < completedJobs.size(); i++) {
+			mappings.add(completedJobs.get(i).getCorrectMapping());
+			partials.add(completedJobs.get(i).getTargetPartial());
+		}
+		
+		for (int i = 0; i < mappings.size(); i++) {
+			/*String mapping = mappings.get(i);
+			for (int j = 0; j < functionVariables.length; j++) { 
+				
+				mapping = mapping.replace(synthesisVariables[j], functionVariables[j]);
+				mapping = mapping.replace(functionVariables[j] + " ", firstInvocation.get(j) + " ");
+				mapping = mapping.replace(functionVariables[j] + ")", firstInvocation.get(j) + ")");
+			}
+			mappings.set(i, mapping);*/
+			mappings.set(i, MIUtils.transformProgramFromTempVarsToInvocation(mappings.get(i), variablesList));
+
+		}
+
+		for (int i = 0; i < partials.size(); i++) {
+			/*
+			String partial = partials.get(i);
+			for (int j = 0; j < benchmark.getVariableNames().length; j++) {
+				partial = partial.replace(benchmark.getSynthesisVariableNames()[j], benchmark.getVariableNames()[j]);
+			}
+			partials.set(i, partial);*/
+			System.out.println(partials.get(i));
+			//partials.set(i, MIUtils.transformProgramFromTempVarsToInvocation(partials.get(i), firstInvocation));
+		}
+
 		String unifiedProgram = "";
 		String closingParentheses = "";
-
+		
+		
 
 		
+		
 		for (int i = 0; i < completedJobs.size() - 1; i++) {
-			unifiedProgram += "(ite " + completedJobs.get(i).getCorrectMapping() + " " + completedJobs.get(i).getTargetPartial() + " ";
+			unifiedProgram += "(ite " + mappings.get(i) + " " + partials.get(i) + " ";
 			closingParentheses += ")";
 		}
 
-		unifiedProgram += " " + completedJobs.get(completedJobs.size() - 1).getTargetPartial() + closingParentheses;
+		unifiedProgram += " " + partials.get(completedJobs.size() - 1) + closingParentheses;
 
 		return unifiedProgram;
 	}
@@ -229,7 +304,8 @@ public class BCS {
 		for (int i = 0; i < correctPrograms.length; i++) {
 			BranchwisePredicateSynthesis rmpj = new BranchwisePredicateSynthesis(
 			correctPrograms[i]);
-
+			//rmpj.run
+			//rmpj.run
 			if (repair) {
 				rmpj.setRepairConstraint(repairConstraint);
 				rmpj.setOmitDistinctness(true);
@@ -422,8 +498,8 @@ public class BCS {
 
 			if (job.isSynthesisFinished()) {
 				completedJobs.add(job);
-				//System.out.println("Added partial " + job.getTargetPartial());
-				//System.out.println("Mapping " + job.getCorrectMapping());
+				System.out.println("Added partial " + job.getTargetPartial());
+				System.out.println("Mapping " + job.getCorrectMapping());
 				numCorrectJobs++;
 			} else {
 				// if we are doing emulateSTUN, start with a fresh job to restart from scratch,
