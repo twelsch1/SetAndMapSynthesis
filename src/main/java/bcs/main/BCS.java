@@ -51,9 +51,9 @@ public class BCS {
 			throw new Exception("Partial programs must be greater than 1");
 		}
 		
-		/*System.out.println("Partials are");
+		/*//System.out.println("Partials are");
 		for (int i = 0; i < partials.length; i++) {
-			System.out.println(partials[i]);
+			//System.out.println(partials[i]);
 		}*/
 		//Retrieve variables from SynthesisParameters
 		long timeout = sp.getTimeout();
@@ -85,12 +85,12 @@ public class BCS {
 		
 		//Build the program to be checked from the completedJobs which among other things contains the partial and corresponding mapping
 		String finalProgram = buildUnifiedProgram(completedJobs, benchmark);
-		System.out.println(finalProgram);
+		//System.out.println(finalProgram);
 		/*for (int i = 0; i < verifier.getVerVarNames().length; i++) {
 			finalProgram = finalProgram.replace(verifier.getSynthesisVariableNames()[i], verifier.getVerVarNames()[i]);
 		}*/
 		
-		System.out.println(finalProgram);
+		//System.out.println(finalProgram);
 		/*
 		String[] functionVariables = benchmark.getFunctionVariables();
 		ArrayList<String> firstInvocation = benchmark.getInvocations().get(0);
@@ -99,12 +99,12 @@ public class BCS {
 			finalProgram = finalProgram.replace(functionVariables[i] + ")", "var" + i + ";)" );
 		}
 		
-		System.out.println(finalProgram);
+		//System.out.println(finalProgram);
 		for (int i = 0; i < firstInvocation.size(); i++) {
 			finalProgram = finalProgram.replace("var" + i + ";", firstInvocation.get(i));
 		}
 		
-		System.out.println(finalProgram);*/
+		//System.out.println(finalProgram);*/
 		
 		//Use try with resources to kick off new Z3 context, ensures it is closed after the try
 		try(Context ctx = new Context()) {
@@ -116,9 +116,9 @@ public class BCS {
 			VerificationCallParameters vcp = new VerificationCallParameters();
 			vcp.setContext(ctx);
 			
-			//System.out.println("Verifying synthesized program");
+			////System.out.println("Verifying synthesized program");
 			//check if the final program is correct, if it is, set done to true
-			//System.out.println("Final program to be verified: " + finalProgram);
+			////System.out.println("Final program to be verified: " + finalProgram);
 
 	
 			
@@ -130,9 +130,9 @@ public class BCS {
 				//set successful to true, move onto returning result
 				successful = true;
 			} else {
-				System.out.println("Following program didnt work");
-				System.out.println(finalProgram);
-				System.out.println("Repair Procedure initiated ");
+				//System.out.println("Following program didnt work");
+				//System.out.println(finalProgram);
+				//System.out.println("Repair Procedure initiated ");
 				//Build the repairConstraint, representing the space where ties need to be resolved
 				String repairConstraint = buildRepairConstraint(completedJobs);
 
@@ -165,16 +165,16 @@ public class BCS {
 					successful = true;
 				} else {
 
-					System.out.println(vr.getStatus());
+					//System.out.println(vr.getStatus());
 					//program was incorrect, print the program that failed
-					System.out.println("Following program wasn't correct: ");
-					System.out.println(finalProgram);
+					//System.out.println("Following program wasn't correct: ");
+					//System.out.println(finalProgram);
 				}
 				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println(e.getMessage());
+			//System.out.println(e.getMessage());
 		} 
 		
 		//check how long it all took, then return the result
@@ -207,7 +207,7 @@ public class BCS {
 		}*/
 		
 		/*
-		System.out.println(finalProgram);
+		//System.out.println(finalProgram);
 		for (int i = 0; i < firstInvocation.size(); i++) {
 			finalProgram = finalProgram.replace("var" + i + ";", firstInvocation.get(i));
 		}*/
@@ -239,7 +239,7 @@ public class BCS {
 				partial = partial.replace(benchmark.getSynthesisVariableNames()[j], benchmark.getVariableNames()[j]);
 			}
 			partials.set(i, partial);*/
-			System.out.println(partials.get(i));
+			//System.out.println(partials.get(i));
 			//partials.set(i, MIUtils.transformProgramFromTempVarsToInvocation(partials.get(i), firstInvocation));
 		}
 
@@ -347,8 +347,8 @@ public class BCS {
 					inProcessJobs.remove(job.getTargetPartial());
 					if (job.isSynthesisFinished()) {
 						completedJobs.add(job);
-						//System.out.println("Added partial " + job.getTargetPartial());
-						//System.out.println("Mapping " + job.getCorrectMapping());
+						////System.out.println("Added partial " + job.getTargetPartial());
+						////System.out.println("Mapping " + job.getCorrectMapping());
 						numCorrectJobs++;
 					} else {
 						
@@ -417,7 +417,7 @@ public class BCS {
 				completedJobs.add(job);
 			}
 
-			//System.out.println("Finished synthesizing predicates, onto unification and final verification");
+			////System.out.println("Finished synthesizing predicates, onto unification and final verification");
 		} finally {
 			exec.shutdownNow();
 		}
@@ -451,7 +451,7 @@ public class BCS {
 
 		while (numCorrectJobs < correctPredsNeeded) {
 
-			//System.out.println("New loop around");
+			////System.out.println("New loop around");
 
 			Instant end = Instant.now();
 			Duration timeElapsed = Duration.between(beginning, end);
@@ -498,8 +498,8 @@ public class BCS {
 
 			if (job.isSynthesisFinished()) {
 				completedJobs.add(job);
-				System.out.println("Added partial " + job.getTargetPartial());
-				System.out.println("Mapping " + job.getCorrectMapping());
+				//System.out.println("Added partial " + job.getTargetPartial());
+				//System.out.println("Mapping " + job.getCorrectMapping());
 				numCorrectJobs++;
 			} else {
 				// if we are doing emulateSTUN, start with a fresh job to restart from scratch,
@@ -515,7 +515,7 @@ public class BCS {
 
 		completedJobs.add(predicateJobs.remove());
 			
-//		System.out.println("Finished synthesizing predicates, onto unification and final verification");
+//		//System.out.println("Finished synthesizing predicates, onto unification and final verification");
 
 		return completedJobs;
 		

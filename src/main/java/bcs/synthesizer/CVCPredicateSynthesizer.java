@@ -29,7 +29,7 @@ public class CVCPredicateSynthesizer extends Synthesizer {
 		
 		
 		String targetFunctionString = benchmark.getFunString().replace("funToken;", targetProgram);
-		System.out.println(targetFunctionString);
+		//System.out.println(targetFunctionString);
 
 		String funcName = benchmark.getFunctionName();
 		String parPattern = "(" + funcName;
@@ -37,13 +37,13 @@ public class CVCPredicateSynthesizer extends Synthesizer {
 		String funString = benchmark.getFunString();
 		String assertionString = benchmark.getAssertionString();
 		String tmp = benchmark.getFunString();
-		System.out.println("FUN STRING " + tmp);
+		//System.out.println("FUN STRING " + tmp);
 		tmp = tmp.substring(0, tmp.lastIndexOf(")"));
 		tmp = tmp.substring(0, tmp.lastIndexOf(")"));
 		tmp += ") Bool)";
 		tmp = tmp.replace("define-fun", "synth-fun");
 		tmp = tmp.replace("synth-fun " + funcName,  "synth-fun pred");
-		System.out.println(tmp);
+		//System.out.println(tmp);
 
 		
 		String remPartialsDefinitions = "";
@@ -80,7 +80,7 @@ public class CVCPredicateSynthesizer extends Synthesizer {
 		}
 		
 		
-		//System.out.println(remPartialsDefinitions);
+		////System.out.println(remPartialsDefinitions);
 		//System.out.print(remPartialsAssertions);
 		
 		
@@ -145,7 +145,7 @@ public class CVCPredicateSynthesizer extends Synthesizer {
 			query = query.replace("var" + (i + 1) + ";", benchmark.getVariableNames()[i]);
 		}
 
-		//System.out.println(query);
+		////System.out.println(query);
 		return query;
 	}
 
@@ -167,14 +167,14 @@ public class CVCPredicateSynthesizer extends Synthesizer {
 					.start();
 
 
-			//System.out.println(buildCVCQuery(verifier.getTargetPartial(), benchmark));
-			//System.out.println("Partial " + verifier.getTargetPartial());
+			////System.out.println(buildCVCQuery(verifier.getTargetPartial(), benchmark));
+			////System.out.println("Partial " + verifier.getTargetPartial());
 			String query = buildCVCQuery(verifier.getTargetPartial(), benchmark, verifier.getRemainingPartials(), verifier.getGlobalConstraints());
 			
 
-			System.out.println(query);
+			//System.out.println(query);
 			try (Writer w = new OutputStreamWriter(process.getOutputStream(), "UTF-8")) {
-				System.out.println("FIRE!");
+			//	System.out.println("FIRE!");
 				w.write(query);
 				
 			} catch (UnsupportedEncodingException e) {
@@ -192,13 +192,13 @@ public class CVCPredicateSynthesizer extends Synthesizer {
 			try (BufferedReader br = new BufferedReader(isr)) {
 				String line;
 				line = br.readLine();
-				System.out.println(line);
+				//System.out.println(line);
 				String cvcResponse = "";
 				while ((line = br.readLine()) != null) {
 				    cvcResponse += line;
 				}
 				
-				System.out.println(cvcResponse);
+				//System.out.println(cvcResponse);
 				
 				if (!cvcResponse.isEmpty()) {
 
@@ -207,19 +207,19 @@ public class CVCPredicateSynthesizer extends Synthesizer {
 				
 				}
 				/*
-				System.out.println(cvcResponse);
+				//System.out.println(cvcResponse);
 				String status = cvcResponse;
-				System.out.println("Did we get anything? " + status);
-				System.out.println(status);
+				//System.out.println("Did we get anything? " + status);
+				//System.out.println(status);
 				String returnedFunction = "";
 				if (status.equals("unsat")) {
 					
 					returnedFunction = br.readLine();
-					System.out.println("Returned function is " + returnedFunction);
+					//System.out.println("Returned function is " + returnedFunction);
 					success = true;
 					program = returnedFunction.substring(returnedFunction.lastIndexOf("Bool") + 4, returnedFunction.length() - 1).trim();
 					
-					System.out.println("Returned program was " + program);
+					//System.out.println("Returned program was " + program);
 				}*/
 
 

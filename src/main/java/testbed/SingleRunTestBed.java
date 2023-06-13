@@ -40,12 +40,12 @@ public class SingleRunTestBed {
 	//SynthesisResult result = SynthesisMethods.runPartialThenPredicateSynthesis(partialsSynthesizer, predicateSynthesizer,benchmark,sp);
 		SynthesisResult result = SynthesisMethods.runMIProgramExtractionThenPredicateSynthesis(predicateSynthesizer, benchmark, sp);
 		//SynthesisResult result = SynthesisMethods.runProgramExtractionThenPredicateSynthesis(partialsSynthesizer, predicateSynthesizer, benchmark, sp);
-		System.out.println("Successful?: " + (result.isSuccessful() ? "Yes" : "No"));
+		//System.out.println("Successful?: " + (result.isSuccessful() ? "Yes" : "No"));
 		if (result.isSuccessful()) {
-			System.out.println("Program found: " + result.getProgramFound());
-			System.out.println(result.getProgramFound().length());
+			//System.out.println("Program found: " + result.getProgramFound());
+			//System.out.println(result.getProgramFound().length());
 		}
-		System.out.println("Time taken: " + result.getTimeTaken() + " seconds");
+		//System.out.println("Time taken: " + result.getTimeTaken() + " seconds");
 		
 	}
 }

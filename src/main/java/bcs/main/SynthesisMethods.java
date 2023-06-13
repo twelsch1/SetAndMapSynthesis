@@ -96,7 +96,7 @@ public class SynthesisMethods {
 		correctPrograms = directProgramExtraction(benchmark);
 		benchmark.setSynthesisVariableNames(userSynthesisVariableNames);
 		/*if (correctPrograms == null) {
-			//System.out.println("Hello");
+			////System.out.println("Hello");
 			correctPrograms = SplitAndConquer.SCGPDiscovery(partialsSynthesizer, benchmark, sp);
 		}*/
 		
@@ -143,10 +143,10 @@ public class SynthesisMethods {
 		benchmark.setSynthesisVariableNames(userSynthesisVariableNames);
 		
 		for (int i = 0; i < correctPrograms.length; i++) {
-			System.out.println(correctPrograms[i]);
+			//System.out.println(correctPrograms[i]);
 		}
 		/*if (correctPrograms == null) {
-			//System.out.println("Hello");
+			////System.out.println("Hello");
 			correctPrograms = SplitAndConquer.SCGPDiscovery(partialsSynthesizer, benchmark, sp);
 		}*/
 		
@@ -193,10 +193,10 @@ public class SynthesisMethods {
 		//benchmark.setSynthesisVariableNames(userSynthesisVariableNames);
 		
 		for (int i = 0; i < correctPrograms.length; i++) {
-			System.out.println(correctPrograms[i]);
+			//System.out.println(correctPrograms[i]);
 		}
 		/*if (correctPrograms == null) {
-			//System.out.println("Hello");
+			////System.out.println("Hello");
 			correctPrograms = SplitAndConquer.SCGPDiscovery(partialsSynthesizer, benchmark, sp);
 		}*/
 		
@@ -239,19 +239,19 @@ public class SynthesisMethods {
 				String fcs = "(" + benchmark.getFunctionName();
 
 				for (String s: arr ) {
-					//System.out.println("variance var : " + s);
+					////System.out.println("variance var : " + s);
 					fcs += " " + s;
 				}
 				fcs += ")";
-				//System.out.println(fcs);
+				////System.out.println(fcs);
 				varianceCalls.add(fcs);
 			}
 		}
 		/*for(ArrayList<String> arr : benchmark.getVariances()) {
 			for (String s : arr) {
-				System.out.println(s);
+				//System.out.println(s);
 			}
-			System.out.println("Break");
+			//System.out.println("Break");
 		}*/
 		
 		String assertionString = benchmark.getAssertionString();
@@ -266,18 +266,18 @@ public class SynthesisMethods {
 			assertionString = assertionString.replace(verifier.getVerVarNames()[i] + ")", verifier.getSynthesisVariableNames()[i] + ")");
 		}
 		
-	//	System.out.println(assertionString);
+	//	//System.out.println(assertionString);
 		
 		HashSet<String> definedFunctionsSet = null;
 		if (benchmark.getDefinedFunctionNames() != null) {
 			definedFunctionsSet = new HashSet<String>();
 			for (int i = 0; i < benchmark.getDefinedFunctionNames().length; i++) {
-				//System.out.println(benchmark.getDefinedFunctionNames()[i].trim());
+				////System.out.println(benchmark.getDefinedFunctionNames()[i].trim());
 				definedFunctionsSet.add(benchmark.getDefinedFunctionNames()[i].trim());
 			}
 		}
 		
-		//System.out.println(assertionString);
+		////System.out.println(assertionString);
 		Node constraintsAsProg = Node.buildNodeFromProgramString(assertionString, definedFunctionsSet);
 		ArrayList<String> correctTerms = constraintsAsProg.extractPossibleIntProgramsPlusMinusOne();
 		
@@ -291,9 +291,9 @@ public class SynthesisMethods {
 		//}
 		
 		/*for (String s : correctTerms) {
-			System.out.println(s);
+			//System.out.println(s);
 		}
-		System.out.println(correctTerms.size());*/
+		//System.out.println(correctTerms.size());*/
 		
 		if (!verifier.verifyPartials(correctTerms.toArray(new String[correctTerms.size()]), null)) {
 			return null;
@@ -327,7 +327,7 @@ public class SynthesisMethods {
 			if (!removedPartials.contains(i)) {
 				partials.add(correctTerms.get(i));
 			} else {
-				//System.out.println("Removed " + correctTerms.get(i));
+				////System.out.println("Removed " + correctTerms.get(i));
 			}
 		}
 
@@ -353,19 +353,19 @@ public static String[] directProgramExtractionRedux(Benchmark benchmark) {
 				String fcs = "(" + benchmark.getFunctionName();
 
 				for (String s: arr ) {
-					//System.out.println("variance var : " + s);
+					////System.out.println("variance var : " + s);
 					fcs += " " + s;
 				}
 				fcs += ")";
-				//System.out.println(fcs);
+				////System.out.println(fcs);
 				varianceCalls.add(fcs);
 			}
 		}
 		/*for(ArrayList<String> arr : benchmark.getVariances()) {
 			for (String s : arr) {
-				System.out.println(s);
+				//System.out.println(s);
 			}
-			System.out.println("Break");
+			//System.out.println("Break");
 		}*/
 		
 		String assertionString = benchmark.getAssertionString();
@@ -384,18 +384,18 @@ public static String[] directProgramExtractionRedux(Benchmark benchmark) {
 		
 		
 		
-	//	System.out.println(assertionString);
+	//	//System.out.println(assertionString);
 		
 		HashSet<String> definedFunctionsSet = null;
 		if (benchmark.getDefinedFunctionNames() != null) {
 			definedFunctionsSet = new HashSet<String>();
 			for (int i = 0; i < benchmark.getDefinedFunctionNames().length; i++) {
-				//System.out.println(benchmark.getDefinedFunctionNames()[i].trim());
+				////System.out.println(benchmark.getDefinedFunctionNames()[i].trim());
 				definedFunctionsSet.add(benchmark.getDefinedFunctionNames()[i].trim());
 			}
 		}
 		
-		//System.out.println(assertionString);
+		////System.out.println(assertionString);
 		Node constraintsAsProg = Node.buildNodeFromProgramString(assertionString, definedFunctionsSet);
 		ArrayList<String> correctTerms = constraintsAsProg.extractPossibleIntProgramsPlusMinusOne();
 		

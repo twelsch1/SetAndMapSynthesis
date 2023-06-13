@@ -210,7 +210,7 @@ public class Verifier {
 				verVarNames, synthesisVariableNames, true);
 		
 
-		System.out.println(verificationString);
+		//System.out.println(verificationString);
 		try {
 			
 			//run the query
@@ -251,7 +251,7 @@ public class Verifier {
 					targetPartial, functionDeclarationString, assertionString, remainingPartials, localRestrictions, globalConstraints, definedFunctions, 
 					verVarNames, synthesisVariableNames, clauses);
 			
-		//	System.out.println(query);
+		//	//System.out.println(query);
 			//Run solver
 			Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
 
@@ -262,13 +262,13 @@ public class Verifier {
 				throw new VerificationException(solver.getReasonUnknown() + direction);
 			}
 			
-			//System.out.println(query);
+			////System.out.println(query);
 
 		} catch (VerificationException e) {
-			//System.out.println(query);
+			////System.out.println(query);
 			throw e;
 		} catch (Exception e) {
-			//System.out.println(query);
+			////System.out.println(query);
 			throw e;
 		} finally {
 			//reset the solver for the next verification call
@@ -293,7 +293,7 @@ public class Verifier {
 					definedFunctions, verVarNames, synthesisVariableNames, eqInvocations, distInvocations, previousConfigurations
 					);
 			
-			//System.out.println(query);
+			////System.out.println(query);
 			//Run solver
 			Status status = solver.check(ctx.parseSMTLIB2String(query, null, null, null, null));
 
@@ -304,13 +304,13 @@ public class Verifier {
 				throw new VerificationException(solver.getReasonUnknown() + direction);
 			}
 			
-			//System.out.println(query);
+			////System.out.println(query);
 
 		} catch (VerificationException e) {
-			//System.out.println(query);
+			////System.out.println(query);
 			throw e;
 		} catch (Exception e) {
-			//System.out.println(query);
+			////System.out.println(query);
 			throw e;
 		} finally {
 			//reset the solver for the next verification call
@@ -527,7 +527,7 @@ public class Verifier {
 		try {
 			if (synthType.equals("program")) {
 
-				 System.out.println("Verifying program");
+				 //System.out.println("Verifying program");
 				model = verifyProgram(program, ctx, solver, counterExamples);
 				if (model == null) {
 					return new VerificationResult(null, Status.UNSATISFIABLE);
@@ -536,10 +536,10 @@ public class Verifier {
 				}
 
 			} else if (synthType.equals("MIPred")) {
-				System.out.println("Hmm");
+				//System.out.println("Hmm");
 				return verifyMIPredicate(program, ctx, solver);
 			} else {
-				//System.out.println(synthType);
+				////System.out.println(synthType);
 				// if synthType isn't program or MIPred, run the predicate verification
 				return verifyPredicate(program, ctx, solver);
 			}
@@ -554,7 +554,7 @@ public class Verifier {
 		String query = VerificationQueries.generateProgramCanSatisfyQuery(program, logic, functionName, functionCallString, 
 				functionDeclarationString, assertionString, partials, definedFunctions, verVarNames, synthesisVariableNames, previousConfigurations);
 		
-		//System.out.println("query " + query);
+		////System.out.println("query " + query);
 		try(Context ctx = new Context()) {
 			
 			//Initialize solver from context
@@ -569,7 +569,7 @@ public class Verifier {
 				throw new Exception("Encountered UNKNOWN verification status");
 			}
 		} catch (Exception e) {
-		//	System.out.println(e.getMessage());
+		//	//System.out.println(e.getMessage());
 			throw e;			
 		} 
 		
@@ -590,7 +590,7 @@ public class Verifier {
 				program, logic, functionName, functionCallString, 
 				functionDeclarationString, assertionString, partials, definedFunctions, verVarNames, synthesisVariableNames, eqInvocations, distInvocations,
 				previousConfigurations);
-		System.out.println(query);
+		//System.out.println(query);
 		try(Context ctx = new Context()) {
 			
 			//Initialize solver from context
@@ -605,7 +605,7 @@ public class Verifier {
 				throw new Exception("Encountered UNKNOWN verification status");
 			}
 		} catch (Exception e) {
-		//	System.out.println(e.getMessage());
+		//	//System.out.println(e.getMessage());
 			throw e;			
 		} 
 		
@@ -619,7 +619,7 @@ public class Verifier {
 		//String query = VerificationQueries.generateDistinctProgramCanSatisfyQuery(program, programsFoundSoFar, logic,
 			//	functionName, functionCallString, functionDeclarationString, assertionString, partials,
 				//definedFunctions, verVarNames, synthesisVariableNames);
-		//System.out.println(query);
+		////System.out.println(query);
 		
 		String query = "";
 		try(Context ctx = new Context()) {
@@ -636,7 +636,7 @@ public class Verifier {
 				throw new Exception("Encountered UNKNOWN verification status");
 			}
 		} catch (Exception e) {
-		//	System.out.println(e.getMessage());
+		//	//System.out.println(e.getMessage());
 			throw e;			
 		} 
 		
@@ -669,7 +669,7 @@ public class Verifier {
 				throw new Exception("Encountered UNKNOWN verification status");
 			}
 		} catch (Exception e) {
-		//	System.out.println(e.getMessage());
+		//	//System.out.println(e.getMessage());
 			throw e;			
 		} 
 		
@@ -700,7 +700,7 @@ public boolean verifyProgramCanSatisfyDistinct(String program, ArrayList<String>
 				throw new Exception("Encountered UNKNOWN verification status");
 			}
 		} catch (Exception e) {
-		//	System.out.println(e.getMessage());
+		//	//System.out.println(e.getMessage());
 			throw e;			
 		} 
 		
@@ -730,7 +730,7 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 			throw new Exception("Encountered UNKNOWN verification status");
 		}
 	} catch (Exception e) {
-	//	System.out.println(e.getMessage());
+	//	//System.out.println(e.getMessage());
 		throw e;			
 	} 
 	
@@ -744,7 +744,7 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 		String query = VerificationQueries.generateConstructDistinctProgramQuery(program, replacementInvocation, replacementProgram, logic, functionName, 
 				functionCallString, functionDeclarationString, assertionString, partials, definedFunctions, verVarNames,
 				synthesisVariableNames, config);
-		//System.out.println(query);
+		////System.out.println(query);
 		try(Context ctx = new Context()) {
 			
 			//Initialize solver from context
@@ -759,7 +759,7 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 				throw new Exception("Encountered UNKNOWN verification status");
 			}
 		} catch (Exception e) {
-		//	System.out.println(e.getMessage());
+		//	//System.out.println(e.getMessage());
 			throw e;			
 		} 
 		
@@ -774,7 +774,7 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 		String query = VerificationQueries.generateCheckReplacementQuery(configToCheck, partials, configurations, logic, functionName, 
 				functionCallString, functionDeclarationString, assertionString, definedFunctions, verVarNames, synthesisVariableNames);
 				
-		//System.out.println(query);
+		////System.out.println(query);
 		try(Context ctx = new Context()) {
 			
 			//Initialize solver from context
@@ -789,7 +789,7 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 				throw new Exception("Encountered UNKNOWN verification status");
 			}
 		} catch (Exception e) {
-		//	System.out.println(e.getMessage());
+		//	//System.out.println(e.getMessage());
 			throw e;			
 		} 
 		
@@ -801,7 +801,7 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 		
 		String query = VerificationQueries.generateAlwaysDistinctQuery(distinctProgramsSoFar, compProgram, unfixedVariables, logic, definedFunctions, verVarNames, synthesisVariableNames);
 				
-		//System.out.println(query);
+		////System.out.println(query);
 		try(Context ctx = new Context()) {
 			
 			//Initialize solver from context
@@ -816,7 +816,7 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 				throw new Exception("Encountered UNKNOWN verification status");
 			}
 		} catch (Exception e) {
-		//	System.out.println(e.getMessage());
+		//	//System.out.println(e.getMessage());
 			throw e;			
 		} 
 		
@@ -828,7 +828,7 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 			ArrayList<String> partials) throws Exception {
 		String[] partialsArray = partials.toArray(new String[partials.size()]); 
 		String query = VerificationQueries.generateIsEqualQuery(program, partialsArray, logic, definedFunctions, verVarNames, synthesisVariableNames);
-		//System.out.println(query);
+		////System.out.println(query);
 		try(Context ctx = new Context()) {
 			
 			//Initialize solver from context
@@ -843,7 +843,7 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 				throw new Exception("Encountered UNKNOWN verification status");
 			}
 		} catch (Exception e) {
-		//	System.out.println(e.getMessage());
+		//	//System.out.println(e.getMessage());
 			throw e;			
 		} 
 		
@@ -856,7 +856,7 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 		String query = VerificationQueries.generateConstructDistinctProgramQuery(program, null, null, logic, functionName, 
 				functionCallString, functionDeclarationString, assertionString, partials, definedFunctions, verVarNames,
 				synthesisVariableNames, config);
-		//System.out.println(query);
+		////System.out.println(query);
 		try(Context ctx = new Context()) {
 			
 			//Initialize solver from context
@@ -866,13 +866,13 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 
 			//if UNSAT, return true
 			if (status == Status.UNSATISFIABLE) {
-				System.out.println("UNSAT");
+				//System.out.println("UNSAT");
 				return true;
 			} else if (status == Status.UNKNOWN) {
 				throw new Exception("Encountered UNKNOWN verification status");
 			}
 		} catch (Exception e) {
-		//	System.out.println(e.getMessage());
+		//	//System.out.println(e.getMessage());
 			throw e;			
 		} 
 		
@@ -899,7 +899,7 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 			String query = VerificationQueries.generateProgramVerificationQuery
 					(null, null, logic, functionName, functionCallString, functionDeclarationString,
 							assertionString, partials, coveredAssertions, null, definedFunctions, verVarNames, synthesisVariableNames, true);
-		//	System.out.println(query);
+		//	//System.out.println(query);
 
 			//open context with try with resources, ensuring it will be closed after try block
 			try(Context ctx = new Context()) {
@@ -914,7 +914,7 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 					return true;
 				} 
 			} catch (Exception e) {
-			//	System.out.println(e.getMessage());
+			//	//System.out.println(e.getMessage());
 				throw e;			
 			} 
 			
@@ -942,7 +942,7 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 
 			String query = VerificationQueries.generateMIPartialsQuery(partials, possiblePrograms,  configurations, logic, functionName,
 					functionCallString, functionDeclarationString, assertionString, definedFunctions, verVarNames, synthesisVariableNames);
-			System.out.println(query);
+			//System.out.println(query);
 
 			//open context with try with resources, ensuring it will be closed after try block
 			try(Context ctx = new Context()) {
@@ -957,7 +957,7 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 					return true;
 				} 
 			} catch (Exception e) {
-			//	System.out.println(e.getMessage());
+			//	//System.out.println(e.getMessage());
 				throw e;			
 			} 
 			
@@ -998,7 +998,7 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 			}
 		} catch(Exception e) {
 			//This will cause issues for our divide and conquer methods, so we throw an exception
-			System.out.println(e.toString());
+			//System.out.println(e.toString());
 			throw e;
 		} 
 
@@ -1145,9 +1145,9 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 		while (i < configurations.size()) {
 			InvocationsConfiguration check = configurations.remove(i);
 			
-			//System.out.println("Removing " + check.getMainProgram());
+			////System.out.println("Removing " + check.getMainProgram());
 			if (!this.verifyMIPartials(partialPrograms, possiblePrograms, configurations)) {
-				//System.out.println("Kept");
+				////System.out.println("Kept");
 				configurations.add(i, check);
 				i++;
 			}

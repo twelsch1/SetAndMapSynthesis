@@ -93,7 +93,7 @@ public class CVC4TestBed {
 	 * )) + benchmark.getFunctionName().length(), //
 	 * funString.lastIndexOf("funToken;"))
 	 * 
-	 * System.out.println(query); return query; }
+	 * //System.out.println(query); return query; }
 	 */
 
 	private static String buildCVCQuery(String targetProgram, Benchmark benchmark) {
@@ -140,7 +140,7 @@ public class CVC4TestBed {
 			query = query.replace("tmpvar" + (i + 1) + ";", benchmark.getFunctionVariables()[i]);
 		}
 
-		// System.out.println(query);
+		// //System.out.println(query);
 		return query;
 	}
 
@@ -164,13 +164,13 @@ public class CVC4TestBed {
 				// String line;
 				String status = br.readLine();
 
-				System.out.println(status);
+				//System.out.println(status);
 				String returnedFunction = "";
 				if (status.equals("unsat")) {
 					returnedFunction = br.readLine();
 				}
 
-				System.out.println(returnedFunction
+				//System.out.println(returnedFunction
 						.substring(returnedFunction.lastIndexOf("Bool") + 4, returnedFunction.length() - 1).trim());
 
 			}
@@ -182,7 +182,7 @@ public class CVC4TestBed {
 	}*/
 	
 	public static void main(String[] args) throws Exception {
-		String benchmarkFile = "src/main/resources/benchmarks/fg_max20.sl";
+		String benchmarkFile = "src/main/resources/benchmarks/fg_array_sum_10_15.sl";
 		//String benchmarkFile = "src/main/resources/benchmarks/darkOne.sl";
 		Benchmark benchmark = Benchmark.parseBenchmark(benchmarkFile);
 		//String cvcLocation = "C:\\Users\\twels\\Documents\\CVC4\\cvc4-1.7-win64-opt.exe";
@@ -203,12 +203,12 @@ public class CVC4TestBed {
 		//String[] correctPrograms = buildMIStrings();
 		//SynthesisResult result = SynthesisMethods.runPredicateSynthesis(correctPrograms, predicateSynthesizer, benchmark, sp);
 		
-		System.out.println("Successful?: " + (result.isSuccessful() ? "Yes" : "No"));
+		//System.out.println("Successful?: " + (result.isSuccessful() ? "Yes" : "No"));
 		if (result.isSuccessful()) {
-			System.out.println("Program found: " + result.getProgramFound());
-			System.out.println(result.getProgramFound().length());
+			//System.out.println("Program found: " + result.getProgramFound());
+			//System.out.println(result.getProgramFound().length());
 		}
-		System.out.println("Time taken: " + result.getTimeTaken() + " seconds");
+		//System.out.println("Time taken: " + result.getTimeTaken() + " seconds");
 		
 	}
 }

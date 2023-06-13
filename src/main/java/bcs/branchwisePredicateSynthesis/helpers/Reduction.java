@@ -34,7 +34,7 @@ public class Reduction {
 	 */
 	public static String reduceToClausalPositiveMapping(Verifier verifier, String predicateToReduce, String[] extraAssertions) {
 		
-//		System.out.println("Removing cons and tauts");
+//		//System.out.println("Removing cons and tauts");
 		String program = predicateToReduce;
 		String[] operators = {">", "<", "<=", ">=", "=", "distinct"};
 		
@@ -82,7 +82,7 @@ public class Reduction {
 
 		}
 		
-		//System.out.println("Escaped");
+		////System.out.println("Escaped");
 		return program;
 		
 	}

@@ -78,7 +78,7 @@ public class GPPredicateSynthesizer extends Synthesizer {
 
 		boolean synthSuccessful = false;
 		
-		//System.out.println("Running GP");
+		////System.out.println("Running GP");
 		ParameterDatabase dbase = setupDatabase(paramFile,runConfig,benchmark);
 		
 		SimpleEvolutionStateWithVerification evaluatedState = (SimpleEvolutionStateWithVerification) Evolve.initialize(dbase, -1);

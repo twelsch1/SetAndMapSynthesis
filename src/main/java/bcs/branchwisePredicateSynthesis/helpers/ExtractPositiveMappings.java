@@ -13,7 +13,7 @@ public class ExtractPositiveMappings {
 
 	public static HashSet<String> extractPositiveMappings(Verifier verifier, String programToModify, String completeMappingWithRestrictions) {
 		
-//		System.out.println("Removing cons and tauts");
+//		//System.out.println("Removing cons and tauts");
 		String program = programToModify;
 		String[] operators = {">", "<", "<=", ">=", "=", "distinct"};
 		
@@ -53,7 +53,7 @@ public class ExtractPositiveMappings {
 
 		}
 		
-		//System.out.println("Escaped");
+		////System.out.println("Escaped");
 		return partialMappings;
 		
 	}

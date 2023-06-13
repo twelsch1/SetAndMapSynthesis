@@ -84,12 +84,12 @@ public class BranchwisePredicateSynthesis implements Comparable<BranchwisePredic
 				VerificationResult vr = verifier.verify(sr.getProgramFound());
 				
 				if (vr.getStatus() != Status.UNSATISFIABLE) {
-					System.out.println(sr.getProgramFound());
+					//System.out.println(sr.getProgramFound());
 					throw new Exception(
 							"Synthesizer returned successful SynthesisResult when programFound is incorrect");
 				}
 				
-				System.out.println("FML");
+				//System.out.println("FML");
 				correctMapping = sr.getProgramFound();
 				synthesisFinished = true;
 			}
@@ -152,10 +152,10 @@ public class BranchwisePredicateSynthesis implements Comparable<BranchwisePredic
 
 						// Verify that synthesis actually was successful if required
 						if (verifySuccess) {
-							//System.out.println(verifier.getTargetPartial());
+							////System.out.println(verifier.getTargetPartial());
 							VerificationResult vr = verifier.verify(sr.getProgramFound());
 							if (vr.getStatus() != Status.UNSATISFIABLE) {
-								System.out.println(sr.getProgramFound());
+								//System.out.println(sr.getProgramFound());
 								throw new Exception(
 										"Synthesizer returned successful SynthesisResult when programFound is incorrect");
 							}
@@ -165,7 +165,7 @@ public class BranchwisePredicateSynthesis implements Comparable<BranchwisePredic
 						String reducedPred = Reduction.reduceToClausalPositiveMapping(verifier, sr.getProgramFound(),
 								buildLocalRestrictions());
 						positiveMappings.add(reducedPred);
-						//System.out.println(reducedPred);
+						////System.out.println(reducedPred);
 						extractPositiveMappingsThenAddToSet(verifier, restrictions.get(restrictions.size()-1));
 						restrictions.remove(restrictions.size() - 1);
 					} else {
@@ -265,7 +265,7 @@ public class BranchwisePredicateSynthesis implements Comparable<BranchwisePredic
 		if (clauses.size() == 1) {
 			retVal = clauses.get(0);
 		} else {
-			//System.out.println("Multiple clauses were needed");
+			////System.out.println("Multiple clauses were needed");
 			String closingParens = "";
 			for (int i = 0; i < clauses.size() - 1; i++) {
 				String clause = clauses.get(i);

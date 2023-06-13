@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
 
+import bcs.multipleInvocation.MIUtils;
 import bcs.programNode.Node;
 import bcs.utils.Utils;
 
@@ -117,7 +118,7 @@ public class Benchmark {
 		//removes any space between ( and characters such that "( func " becomes "(func "
 		fileContent = fileContent.replaceAll("\\(\s+", "(");
 		//fileContent = fileContent.replaceAll("\s+\\)", ")");
-		//System.out.println(fileContent);
+		////System.out.println(fileContent);
 		
 		int[] constants = extractConstants(fileContent);
 		
@@ -175,7 +176,7 @@ public class Benchmark {
 				
 				
 				funString = funString.substring(0, funString.length() - 1) + " funToken;)";
-				String funVariablesString = funString.substring(funString.indexOf(functionName) + functionName.length(), funString.lastIndexOf("funToken;"));
+				String funVariablesString = funString.substring(funString.indexOf(" " +functionName + " ") + functionName.length()+2, funString.lastIndexOf("funToken;"));
 				funVariablesString = funVariablesString.substring(0, funVariablesString.lastIndexOf(")")).replace("(", "").replace(")", "");
 
 				try(Scanner scan = new Scanner(funVariablesString)) {
@@ -211,14 +212,14 @@ public class Benchmark {
 					throw e;
 				}
 			} else if (s.contains("constraint")) {
-				// System.out.println(s);
+				// //System.out.println(s);
 				int idx = 12;
 				constraints.add(s.substring(idx, s.length() - 1).trim());
 			}
 		}
 
-		// System.out.println(functionName);
-		// System.out.println(funString);
+		// //System.out.println(functionName);
+		// //System.out.println(funString);
 		String assertionString = "";
 		if (constraints.size() == 1) {
 			assertionString = constraints.get(0);
@@ -232,20 +233,20 @@ public class Benchmark {
 		
 		
 
-		//System.out.println(assertionString);
+		////System.out.println(assertionString);
 		assertionString = Node.formatProgramStringForNode(assertionString);
 		ArrayList<ArrayList<String>> invocations = findInvocations(assertionString,"("+ functionName + " ");
 		
 		
-		//System.out.println("Hi");
+		////System.out.println("Hi");
 		//String[] tmpVars = {"tmpvar1;", "tmpvar2;"};
 		//String prog = "(- tmpvar1; tmpvar2;)";
 		
-		//System.out.println(transformSIProgramToMI(prog, variances, tmpVars));
+		////System.out.println(transformSIProgramToMI(prog, variances, tmpVars));
 		if (invocations == null) {
 			throw new Exception("Unsupported Benchmark");
 		}
-		// System.out.println(assertionString);
+		// //System.out.println(assertionString);
 		String[] definedFunctionsArr;
 		String[] definedFunctionNamesArr;
 		if (definedFunctions.isEmpty()) {
@@ -256,6 +257,9 @@ public class Benchmark {
 			definedFunctionNamesArr = definedFunctionNames.toArray(new String[definedFunctionNames.size()]);
 
 		}
+	//	System.out.println(funString);
+		funString = MIUtils.transformProgramFromInvocations(funString, functionVariables, variables);
+		//System.out.println(funString);
 		Benchmark b = new Benchmark(functionName, assertionString, funString, variables.toArray(new String[variables.size()]),
 				definedFunctionsArr, definedFunctionNamesArr,logic, invocations);
 		
@@ -293,7 +297,7 @@ public class Benchmark {
 		String sub = assertions;
 		while (true) {
 			
-			//System.out.println(sub);
+			////System.out.println(sub);
 			int idx = sub.indexOf(targetFunction);
 			
 			if (idx == -1) {
@@ -301,7 +305,7 @@ public class Benchmark {
 			}
 			
 			String funStringToExtract = Utils.extractNextFunction(sub.substring(idx));
-			//System.out.println("Extracting: " + funStringToExtract);
+			////System.out.println("Extracting: " + funStringToExtract);
 			invocationStrings.add(funStringToExtract);
 			principalString = funStringToExtract;
 			idx += funStringToExtract.length();
@@ -338,7 +342,7 @@ public class Benchmark {
 		ArrayList<String> params = new ArrayList<>();
 		String sub = varianceWithoutLeadingFunction;
 		String orig = sub;
-		//System.out.println(sub);
+		////System.out.println(sub);
 		int idx = 0;
 		while (true) {
 			String nextParam = Utils.extractNextFunction(sub);
@@ -402,7 +406,7 @@ public class Benchmark {
 		int[] constants = benchmark.getConstants();
 		
 		for (int c : constants) {
-			System.out.println(c);
+			//System.out.println(c);
 		}
 	}
 	

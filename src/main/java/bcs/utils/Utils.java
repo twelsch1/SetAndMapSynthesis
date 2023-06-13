@@ -21,7 +21,7 @@ public static HashSet<String> extractPositiveMappings(Verifier verifier, String 
 
 public static HashSet<String> extractPositiveMappings(Verifier verifier, String programToModify, String completeMappingWithRestrictions) {
 	
-//	System.out.println("Removing cons and tauts");
+//	//System.out.println("Removing cons and tauts");
 	String program = programToModify;
 	String[] operators = {">", "<", "<=", ">=", "=", "distinct"};
 	
@@ -61,7 +61,7 @@ public static HashSet<String> extractPositiveMappings(Verifier verifier, String 
 
 	}
 	
-	//System.out.println("Escaped");
+	////System.out.println("Escaped");
 	return partialMappings;
 	
 }

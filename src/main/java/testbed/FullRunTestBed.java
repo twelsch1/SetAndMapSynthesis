@@ -39,12 +39,12 @@ public class FullRunTestBed {
 		for (int i = start; i <= numTrials; i++) {
 			String results = "Benchmark,Successful,Time Taken,Program Found,Program Length\n";
 
-			System.out.println("Number of benchmarks to synthesize: " + sz);
+			//System.out.println("Number of benchmarks to synthesize: " + sz);
 			for (int j = 0; j < sz; j++) {
 
 				String benchmarkName = benchmarkNames.get(j);
 
-				System.out.println(benchmarkName);
+				//System.out.println(benchmarkName);
 				Benchmark benchmark = Benchmark.parseBenchmark(benchmarkName);
 				
 				String[] synthesisVariableNames = new String[benchmark.getVariableNames().length];
@@ -66,12 +66,12 @@ public class FullRunTestBed {
 						partialsSynthesizer, predicateSynthesizer, benchmark, sp);
 
 				results += benchmarkName + "," + result.asResultString() + "\n";
-				System.out.println("Successful?: " + (result.isSuccessful() ? "Yes" : "No"));
+				//System.out.println("Successful?: " + (result.isSuccessful() ? "Yes" : "No"));
 				if (result.isSuccessful()) {
-					System.out.println("Program found: " + result.getProgramFound());
-					System.out.println("Program Length: " + result.getProgramFound().length());
+					//System.out.println("Program found: " + result.getProgramFound());
+					//System.out.println("Program Length: " + result.getProgramFound().length());
 				}
-				System.out.println("Time taken: " + result.getTimeTaken() + " seconds");
+				//System.out.println("Time taken: " + result.getTimeTaken() + " seconds");
 
 				BufferedWriter writer = new BufferedWriter(new FileWriter("results" + i + ".csv"));
 				writer.write(results);

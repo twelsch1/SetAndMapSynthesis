@@ -61,7 +61,7 @@ public class SplitAndCover {
 
 		while (keepGoing) {
 
-			//System.out.println("Next loop");
+			////System.out.println("Next loop");
 			Instant end = Instant.now();
 			Duration timeElapsed = Duration.between(start, end);
 
@@ -158,15 +158,15 @@ public class SplitAndCover {
 					}
 				}
 
-				// System.out.println("Jobs to process size should be " + theoreticalJobSize + "
+				// //System.out.println("Jobs to process size should be " + theoreticalJobSize + "
 				// but is " + jobsToProcess.size());
 
 				if (result.isSuccessful()) {
-					System.out.println("Result was successful");
+					//System.out.println("Result was successful");
 					ArrayList<String> termsExtracted = Utils.extractTerms(result.getProgram(), maxTerms);
 					ArrayList<String> termsToAdd = new ArrayList<>();
 
-					System.out.println("Correct program: " + result.getProgram());
+					//System.out.println("Correct program: " + result.getProgram());
 					if (termsExtracted != null) {
 						for (String term : termsExtracted) {
 							if (!termsToAdd.contains(term) && !coveringAdditionalTerms.contains(term)) {
@@ -176,13 +176,13 @@ public class SplitAndCover {
 					}
 
 					if (termsToAdd.size() > maxTerms || emulateCEGIS || firstRun || termsExtracted == null) {
-						System.out.println("Adding just as program");
+						//System.out.println("Adding just as program");
 						correctTerms.add(result.getProgram());
 					} else {
 						// correctTerms.add(currentJob.getProgramTree().makeLispTree());
-						System.out.println("Adding correct terms");
+						//System.out.println("Adding correct terms");
 						for (String term : termsToAdd) {
-							System.out.println(term);
+							//System.out.println(term);
 							if (!correctTerms.contains(term)) {
 								correctTerms.add(term);
 							}
@@ -198,9 +198,9 @@ public class SplitAndCover {
 
 
 				} else if(extractAdditionalTerms && result.getProgram() != null && !result.getProgram().isBlank()) {
-					System.out.println("Result was unsuccessful, program attempt: " + result.getProgram());
+					//System.out.println("Result was unsuccessful, program attempt: " + result.getProgram());
 					ArrayList<String> terms = Utils.extractTerms(result.getProgram(), maxTerms);
-					//System.out.println("Terms extracted");
+					////System.out.println("Terms extracted");
 					ArrayList<String> termsToAddStrings = new ArrayList<>();
 					ArrayList<AdditionalTerm> termsToAdd = new ArrayList<>();
 
@@ -211,7 +211,7 @@ public class SplitAndCover {
 							if (term.length() < maxAdditionalTermLength && !correctTerms.contains(term)
 									&& !additionalTermStrings.contains(term) && !termsToAddStrings.contains(term)
 									&& additionalTermsAdded < additionalTermsPerExtraction) {
-								// System.out.println(term);
+								// //System.out.println(term);
 								termsToAddStrings.add(term);
 								termsToAdd.add(new AdditionalTerm(term));
 								additionalTermsAdded++;
@@ -232,7 +232,7 @@ public class SplitAndCover {
 
 					additionalTerms.addAll(termsToAdd);
 
-					// System.out.println("Additional terms size is " + additionalTerms.size());
+					// //System.out.println("Additional terms size is " + additionalTerms.size());
 
 				}
 				
@@ -254,9 +254,9 @@ public class SplitAndCover {
 				}
 			}
 
-			 System.out.println("Checking the following terms");
+			 //System.out.println("Checking the following terms");
 			for (String s : correctTermsAndAdditionalTerms) {
-				System.out.println(s);
+				//System.out.println(s);
 			}
 
 			keepGoing = !verifier.verifyPartials(
@@ -285,7 +285,7 @@ public class SplitAndCover {
 		}
 
 		for (int i = 0; i < correctTerms.size(); i++) {
-			System.out.println("Term " + (i + 1) + ":" + correctTerms.get(i));
+			//System.out.println("Term " + (i + 1) + ":" + correctTerms.get(i));
 		}
 		
 		return verifier.reduceToNecessarySet(correctTerms);
@@ -322,7 +322,7 @@ public class SplitAndCover {
 			if (!removedPartials.contains(i)) {
 				partials.add(correctTerms.get(i));
 			} else {
-				System.out.println("Removed " + correctTerms.get(i));
+				//System.out.println("Removed " + correctTerms.get(i));
 			}
 		}
 

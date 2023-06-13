@@ -57,8 +57,12 @@ public class MIUtils {
 
 		} else {
 			for (int i = 0; i < templateInvocation.size(); i++) {
+				//System.out.println(tmpSynthString);
 				tmpSynthString = tmpSynthString.replace(" " + templateInvocation.get(i) + " ", " var" + (i+1) + "; ");
 				tmpSynthString = tmpSynthString.replace(templateInvocation.get(i) + ")", "var" + (i+1) + ";)");
+				tmpSynthString = tmpSynthString.replace("(" + templateInvocation.get(i) + " ", "(var" + (i+1) + "; ");
+				
+				//System.out.println("um " + templateInvocation.get(i));
 			}
 		}
 		
@@ -131,7 +135,7 @@ public class MIUtils {
 			verifier.setDistInvocations(distInvocations);
 			verifier.setEqInvocations(eqInvocations);
 			if (!verifier.verifyInterchangeableConfiguration(program, partials.toArray(new String[partials.size()]))) {
-				System.out.println("Removing from dist and adding to equality on program " + program);
+				//System.out.println("Removing from dist and adding to equality on program " + program);
 				distInvocations.remove(distInvocations.size() - 1);
 				eqInvocations.add(invocations.get(i));
 			}
@@ -143,7 +147,7 @@ public class MIUtils {
 	
 	public static ArrayList<String> extractPossibleInterchangeablePrograms(String program, ArrayList<ArrayList<String>> nonPrincipalInvocations,
 			ArrayList<String> partials, Verifier verifier, ArrayList<String> principalInvocation) throws Exception {
-		////System.out.println("Hey");
+		//////System.out.println("Hey");
 		ArrayList<String> possiblePrograms = new ArrayList<>();
 		ArrayList<InvocationsConfiguration> previousConfigurations = new ArrayList<>();
 		previousConfigurations.add(new InvocationsConfiguration(new ArrayList<ArrayList<String>>(), nonPrincipalInvocations));
@@ -154,7 +158,7 @@ public class MIUtils {
 					partials, verifier);
 
 			String predicate = MIUtils.generateMIPredicate(nextConfiguration.getEqInvocations(), principalInvocation);
-			//System.out.println("Predicate " + predicate);
+			////System.out.println("Predicate " + predicate);
 
 			possiblePrograms.add(MIUtils.constructInterchangeableProgram(program, nextConfiguration.getEqInvocations(),
 					principalInvocation, predicate));
@@ -181,12 +185,12 @@ public class MIUtils {
         relevantPlusPrincipalInvocations.add(principalInvocation);
 		ArrayList<String> unfixedVariables = MIUtils.determineUnfixedVariables(relevantPlusPrincipalInvocations);
 		//for (String s : unfixedVariables) {
-			//System.out.println(s);
+			////System.out.println(s);
 		//}
 		ArrayList<String> synthVarUnfixedVariables = new ArrayList<>();
 		
 		for (int i = 0; i < unfixedVariables.size(); i++) {
-			//System.out.println(	MIUtils.transformProgramFromInvocationToTempVars(unfixedVariables.get(i), principalInvocation));
+			////System.out.println(	MIUtils.transformProgramFromInvocationToTempVars(unfixedVariables.get(i), principalInvocation));
 
 			synthVarUnfixedVariables.add(MIUtils.transformProgramFromInvocationToTempVars(unfixedVariables.get(i), principalInvocation));
 		}
@@ -215,7 +219,7 @@ public class MIUtils {
 		partials.addAll(programsExtractedSoFar);
 		for (String s: programsExtractedSoFar) {
 			
-			////System.out.println(s);
+			//////System.out.println(s);
 			partials.addAll(MIUtils.extractPossibleInterchangeablePrograms(s, nonPrincipalInvocations, partials, verifier, principalInvocation));
 			
 
@@ -321,7 +325,7 @@ public class MIUtils {
 		
 		extracted = MIUtils.interchangeableProgramExtraction(extracted, verifier, nonPrincipalInvocations, variablesList);
 		for (String s: extracted) {
-			System.out.println(s);
+			//System.out.println(s);
 		}
 		
 		if (verifier.verifyMIPartials(extracted, possiblePrograms, null)) {
@@ -380,7 +384,7 @@ public class MIUtils {
 
 		String[] extracted = MIUtils.automaticSatisfyingSetConstruction(benchmark);
 		for (int i = 0; i < extracted.length; i++) {
-			System.out.println(extracted[i]);
+			//System.out.println(extracted[i]);
 		}
 
 	}
@@ -425,12 +429,12 @@ public class MIUtils {
 			if (programsFoundSoFar.contains(programToCheck)) {
 				continue;
 			}
-			////System.out.println("Program to check: " + programToCheck);
+			//////System.out.println("Program to check: " + programToCheck);
 			if (verifier.verifyProgramEligibleActual(programToCheck, programsFoundSoFar, partials, configurations)) {
 				eligiblePrograms.add(programToCheck);
-				////System.out.println("eligible");
+				//////System.out.println("eligible");
 			} else {
-				////System.out.println("Ineligible");
+				//////System.out.println("Ineligible");
 			}
 			
 			
@@ -448,10 +452,10 @@ public class MIUtils {
  		for (int i = 0; i < possiblePrograms.size(); i++) {
 			String programToCheck = possiblePrograms.get(i);
 
-			////System.out.println("Program to check: " + programToCheck);
+			//////System.out.println("Program to check: " + programToCheck);
 			if (verifier.verifyIsAlwaysDistinct(distinctProgramsSoFar, programToCheck, unfixedVariables)) {
 				eligiblePrograms.add(programToCheck);
-				////System.out.println("eligible");
+				//////System.out.println("eligible");
 			}
 			
 			
@@ -494,13 +498,13 @@ public class MIUtils {
 			ic.addReplacementInvocation(currentInvocation);
 			for (int i = 0; i < eligiblePrograms.size(); i++) {
 				
-				//System.out.println("Adding, pre size is " + ic.getReplacementPrograms().size() );
+				////System.out.println("Adding, pre size is " + ic.getReplacementPrograms().size() );
 				ic.addReplacementProgram(eligiblePrograms.get(i));
-				//System.out.println("Post size is " + ic.getReplacementPrograms().size() );
+				////System.out.println("Post size is " + ic.getReplacementPrograms().size() );
 
 				if (verifier.verifyProgramCanReplaceActual(ic, partials, configurations)) {
 					programsFoundSoFar.add(eligiblePrograms.get(i));
-					//System.out.println("Success");
+					////System.out.println("Success");
 					break;
 				} else {
 				}
@@ -536,11 +540,11 @@ public class MIUtils {
 		programs.add(ic.getMainProgram());
 		programs.addAll(ic.getReplacementPrograms());
 		
-		////System.out.println("Start");
+		//////System.out.println("Start");
 		//for (String s : programs) {
-			////System.out.println(s);
+			//////System.out.println(s);
 		//}
-		//System.out.println("End");
+		////System.out.println("End");
 		
 		String retVal = "";
 		String closingParens = "";
@@ -587,13 +591,13 @@ public class MIUtils {
 				benchmark.getVariableNames(), null, benchmark.getFunString(), benchmark.getAssertionString(), 
 				benchmark.getLogic(), null);
 		
-		//System.out.println(verifier.verifyProgramCanSatisfy(satProgram, null));
-		//System.out.println(verifier.verifyProgramCanSatisfy(unsatProgram, null));
+		////System.out.println(verifier.verifyProgramCanSatisfy(satProgram, null));
+		////System.out.println(verifier.verifyProgramCanSatisfy(unsatProgram, null));
 		partials[0] = satProgram;
 		partials[1] = altSatProgram;
-		//System.out.println(verifier.verifyProgramCanSatisfy(satProgram, partials));
+		////System.out.println(verifier.verifyProgramCanSatisfy(satProgram, partials));
 		partials[1] = correctProgram;
-		//System.out.println(verifier.verifyProgramCanSatisfy(satProgram, partials));
+		////System.out.println(verifier.verifyProgramCanSatisfy(satProgram, partials));
 		*/
 		
 		/*String predicate = "(>= var1; var2;)";
@@ -614,7 +618,7 @@ public class MIUtils {
 		programs.add("var1;");
 		programs.add("var2;");
 		
-		//System.out.println(MIUtils.constructMIProgram(predicate, variables, invocations, programs));
+		////System.out.println(MIUtils.constructMIProgram(predicate, variables, invocations, programs));
 		*/
 		
 		
@@ -631,16 +635,16 @@ public class MIUtils {
 		target.add("y");
 		target.add("x");
 		
-		//System.out.println(MIUtils.transformProgramFromInvocations(program, template, target));
-		//System.out.println(MIUtils.transformProgramFromTempVarsToInvocation(synthProgram, target));
+		////System.out.println(MIUtils.transformProgramFromInvocations(program, template, target));
+		////System.out.println(MIUtils.transformProgramFromTempVarsToInvocation(synthProgram, target));
 		
 		program = "x";
 		synthProgram = "var1;";
 		
 		
-		//System.out.println(MIUtils.transformProgramFromInvocations(program, template, target));
-		//System.out.println(MIUtils.transformProgramFromTempVarsToInvocation(synthProgram, target));
-		//System.out.println(MIUtils.transformProgramFromTempVarsToInvocation(synthProgram, template));
+		////System.out.println(MIUtils.transformProgramFromInvocations(program, template, target));
+		////System.out.println(MIUtils.transformProgramFromTempVarsToInvocation(synthProgram, target));
+		////System.out.println(MIUtils.transformProgramFromTempVarsToInvocation(synthProgram, template));
 		*/
 		
 	}

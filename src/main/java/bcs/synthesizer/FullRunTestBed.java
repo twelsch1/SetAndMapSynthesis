@@ -21,7 +21,7 @@ public class FullRunTestBed {
 			benchmarkNames.add(file.getPath());
 		}
 		
-		String cvcLocation = "C:\\Users\\twels\\Documents\\CVC4\\cvc4-1.7-win64-opt.exe";
+		String cvcLocation = "C:\\Users\\twels\\Documents\\cvc5\\cvc5-2021-09-04-win64-opt.exe";
 
 		int numTrials = 1;
 		int start = 1;
@@ -33,7 +33,7 @@ public class FullRunTestBed {
 		for (int i = start; i <= numTrials; i++) {
 			String results = "Benchmark,Successful,Time Taken,Program Found,Program Length\n";
 
-			System.out.println("Number of benchmarks to synthesize: " + sz);
+			//System.out.println("Number of benchmarks to synthesize: " + sz);
 			for (int j = 0; j < sz; j++) {
 
 				String benchmarkName = benchmarkNames.get(j);
@@ -46,10 +46,10 @@ public class FullRunTestBed {
 				sp.setSkipToRepair(true);
 				sp.setBranchwiseMode("CVC");
 				// sp.set
-				SynthesisResult result = SynthesisMethods.runProgramExtractionThenPredicateSynthesis(
-						synth, benchmark, sp);
+				SynthesisResult result = SynthesisMethods.runMIProgramExtractionThenPredicateSynthesis(synth, benchmark, sp);
 
 				results += benchmarkName + "," + result.asResultString() + "\n";
+				
 				System.out.println("Successful?: " + (result.isSuccessful() ? "Yes" : "No"));
 				if (result.isSuccessful()) {
 					System.out.println("Program found: " + result.getProgramFound());

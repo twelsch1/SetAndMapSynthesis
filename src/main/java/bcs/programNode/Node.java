@@ -87,7 +87,7 @@ public abstract class Node {
 		//gets the function operator and/or the constant/variable
 		String funcType = Utils.scanToSpace(program);
 		
-		//System.out.println(funcType);
+		////System.out.println(funcType);
 		int numChildren = 0;
 		
 
@@ -202,17 +202,17 @@ public abstract class Node {
 		String program = "(and (>= 2 var2;)    (>= 0 var2;) (= (+ var1; 1)\n var3;)"
 				+ "    "
 				+ ")  ";
-		System.out.println(program);
+		//System.out.println(program);
 		int[] variables = {3, 1, 4};
 		Node node = Node.buildNodeFromProgramString(Node.formatProgramStringForNode(program));
-		System.out.println(node.makeLispTree());
+		//System.out.println(node.makeLispTree());
 
-		System.out.println(node.evaluate(variables));
+		//System.out.println(node.evaluate(variables));
 
 		ArrayList<String> fullExtractionList = node.extractPossibleIntProgramsPlusMinusOne();
 		
 		for (String s : fullExtractionList) {
-			System.out.println(s);
+			//System.out.println(s);
 		}
 		
 	}*/

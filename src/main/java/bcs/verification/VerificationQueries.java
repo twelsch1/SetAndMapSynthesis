@@ -134,7 +134,7 @@ public class VerificationQueries {
 		
 		//replace temporary variable names with sygus variable names	
 		for (int i = 0; i < variableNames.length; i++) {
-			//System.out.println(tempVarNames[i] + " " + variableNames[i]);
+			////System.out.println(tempVarNames[i] + " " + variableNames[i]);
 		 retVal = retVal.replace("var" + (i+1) + ";", variableNames[i]);
 		}
 		
@@ -393,11 +393,11 @@ public class VerificationQueries {
 		
 		//replace temporary variable names with sygus variable names	
 		for (int i = 0; i < variableNames.length; i++) {
-			//System.out.println(tempVarNames[i] + " " + variableNames[i]);
+			////System.out.println(tempVarNames[i] + " " + variableNames[i]);
 			query = query.replace("var" + (i+1) + ";", variableNames[i]);
 		}
 		
-		//System.out.println(query);
+		////System.out.println(query);
 		
 		return query;
 	}
@@ -504,13 +504,13 @@ public class VerificationQueries {
 		
 		//Assert that inputs come from the space covered by the Conjunction of extraAssertions
 		if (extraAssertions != null) {
-			System.out.println("extraAssertions " + extraAssertions.length);
+			//System.out.println("extraAssertions " + extraAssertions.length);
 			for (int i = 0; i < extraAssertions.length; i++) {
-				//System.out.println(extraAssertions[i]);
+				////System.out.println(extraAssertions[i]);
 				query += "(assert " + extraAssertions[i] + ")\n";
 			}
 		} else {
-			System.out.println("No extra assertions");
+			//System.out.println("No extra assertions");
 		}
 		
 		//Assert that inputs cannot come from the space covered by globalConstraints i.e. inputs where we already have a correct answer.
@@ -534,11 +534,11 @@ public class VerificationQueries {
 		
 		//replace temporary variable names with sygus variable names	
 		for (int i = 0; i < variableNames.length; i++) {
-			//System.out.println(tempVarNames[i] + " " + variableNames[i]);
+			////System.out.println(tempVarNames[i] + " " + variableNames[i]);
 			query = query.replace("var" + (i+1) + ";", variableNames[i]);
 		}
 		
-		//System.out.println(query);
+		////System.out.println(query);
 		
 		return query;
 	}
@@ -757,7 +757,7 @@ public class VerificationQueries {
 			// one of the partials found thus far.
 			for (int i = 0; i < foundPartials.length; i++) {
 				//if (!foundPartials[i].equals(program)) {
-					//System.out.println(foundPartials[i]);
+					////System.out.println(foundPartials[i]);
 					retVal += functionDeclarationString.replace(defPattern, defPattern + "_" + i).replace("funToken;",
 							foundPartials[i]) + "\n";
 					retVal += "(assert (not " + assertionString.replace(parPattern, parPattern + "_" + i) + "))\n";
@@ -766,16 +766,16 @@ public class VerificationQueries {
 
 		}
 		
-		//System.out.println(variableNames.length);
-	//	System.out.println(retVal);
+		////System.out.println(variableNames.length);
+	//	//System.out.println(retVal);
 		//replace temporary variable names with sygus variable names	
 		for (int i = 0; i < variableNames.length; i++) {
-	//	System.out.println("var" + (i+1) + ";");
+	//	//System.out.println("var" + (i+1) + ";");
 		 retVal = retVal.replace("var" + (i+1) + ";", variableNames[i]);
 		}
 		
 		
-		//System.out.println(retVal);
+		////System.out.println(retVal);
 		return retVal;
 	}
 	
@@ -905,14 +905,14 @@ public class VerificationQueries {
 		}
 			
 		//replace temporary variable names with sygus variable names	
-		//System.out.println(variableNames.length);
+		////System.out.println(variableNames.length);
 		for (int i = 0; i < variableNames.length; i++) {
-		  //  System.out.println("var" + (i+1) + ";");
+		  //  //System.out.println("var" + (i+1) + ";");
 		 retVal = retVal.replace("var" + (i+1) + ";", variableNames[i]);
 		}
 		
 		
-		//System.out.println(retVal);
+		////System.out.println(retVal);
 		
 		return retVal;
 	}
@@ -1109,7 +1109,7 @@ public class VerificationQueries {
 		}
 		
 		
-		//System.out.println(retVal);
+		////System.out.println(retVal);
 		return retVal;
 	}
 	
@@ -1267,7 +1267,7 @@ public class VerificationQueries {
 		retVal += "))";
 		
 		//for (int i = 0; i < programsSoFar.size(); i++) {
-			//System.out.println(programsSoFar.get(i));
+			////System.out.println(programsSoFar.get(i));
 		//}
 		
 		for (int i = 0; i < programsSoFar.size(); i++) {
@@ -1296,8 +1296,8 @@ public class VerificationQueries {
 			}
 			
 			for (int j = 0; j < repInvs.size(); j++) {
-				//System.out.println("Replacing size is " + repInvs.size());
-				//System.out.println(replacements.get(j) + "vs " + principalProgram);
+				////System.out.println("Replacing size is " + repInvs.size());
+				////System.out.println(replacements.get(j) + "vs " + principalProgram);
 				ArrayList<String> inv = repInvs.get(j);
 				String invocationString = buildInvocationString(inv, functionName);
 				retVal += "(= " + invocationString + " "
@@ -1393,7 +1393,7 @@ public class VerificationQueries {
 			retVal = retVal.replace("var" + (i + 1) + ";", variableNames[i]);
 		}
 		
-		//System.out.println(retVal);
+		////System.out.println(retVal);
 
 		return retVal;
 	}
@@ -1440,7 +1440,7 @@ public class VerificationQueries {
 			retVal += "(assert (= " + functionCallString + " " + program + "))\n";
 		} else {
 			//assert that target function is equal to program OR replacement program
-			//System.out.println("Program is " + program);
+			////System.out.println("Program is " + program);
 			retVal += "(assert (or (= " + functionCallString + " " + program + ") ";
 			retVal += "(= " + functionCallString + " " + replacementProgram + ") ";
 			
@@ -1539,7 +1539,7 @@ public class VerificationQueries {
 		}
 		
 		
-		//System.out.println(retVal);
+		////System.out.println(retVal);
 		return retVal;
 	}
 	
@@ -1579,7 +1579,7 @@ public class VerificationQueries {
 		}
 		
 		
-		//System.out.println(retVal);
+		////System.out.println(retVal);
 		return retVal;
 	}
 	
@@ -1612,12 +1612,12 @@ public class VerificationQueries {
 		}
 		decFunString += ") Int )\n";
 		
-		retVal += decFunString + "\n";
+		retVal += decFunString.replace("(declare-fun " + functionName, "(declare-fun " + functionName + "_eliminator") + "\n";
 		
 		
 		//Rather than asserting the negation, we assert that there is input/output that satisfies. 
 		//We then assert below that it must equal one of the values in partials
-		retVal += "(assert " +assertionString + ")\n";
+		retVal += "(assert " +assertionString.replace(parPattern, parPattern + "_eliminator") + ")\n";
 		
 		
 		retVal += "(assert (or false ";
@@ -1626,7 +1626,7 @@ public class VerificationQueries {
 		// for each program in possiblePrograms, we ensure any counterexamples are distinct from the output
 	    // if the terms cover all possible correct outputs then the call will be unsatisfiable
 		for (int i = 0; i < possiblePrograms.size(); i++) {
-			retVal += "(= " + functionCallString + " " + possiblePrograms.get(i) + ") ";
+			retVal += "(= " + functionCallString.replace(parPattern, parPattern + "_eliminator") + " " + possiblePrograms.get(i) + ") ";
 		}
 		
 		retVal += "))\n";
@@ -1673,7 +1673,7 @@ public class VerificationQueries {
 
 		// replace temporary variable names with sygus variable names
 		for (int i = 0; i < variableNames.length; i++) {
-			// System.out.println(tempVarNames[i] + " " + variableNames[i]);
+			// //System.out.println(tempVarNames[i] + " " + variableNames[i]);
 			retVal = retVal.replace("var" + (i + 1) + ";", variableNames[i]);
 		}
 
@@ -1715,7 +1715,7 @@ public class VerificationQueries {
 		}
 		retVal += "))\n";
 		for (int i = 0; i < variableNames.length; i++) {
-			// System.out.println(tempVarNames[i] + " " + variableNames[i]);
+			// //System.out.println(tempVarNames[i] + " " + variableNames[i]);
 			retVal = retVal.replace("var" + (i + 1) + ";", variableNames[i]);
 		}
 

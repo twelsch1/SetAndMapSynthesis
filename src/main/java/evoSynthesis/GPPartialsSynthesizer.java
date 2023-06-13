@@ -138,11 +138,11 @@ public class GPPartialsSynthesizer extends Synthesizer {
 			foundCounterExamples = fe.getFoundCounterExamples();
 		
 		} else {
-			////System.out.println("Correct program found")
+			//////System.out.println("Correct program found")
 			successful = true;
 		}
 		
-		System.out.println("Best program found: " + bestProgram);
+		//System.out.println("Best program found: " + bestProgram);
 
 		if (!successful) {
 			if (Utils.programHasIte(bestProgram)) {
@@ -155,7 +155,7 @@ public class GPPartialsSynthesizer extends Synthesizer {
 
 		}
 		
-		System.out.println("Split is: " + split);
+		//System.out.println("Split is: " + split);
 		
 		Evolve.cleanup(evaluatedState);
 		return new SynthesisResult(successful,bestProgram,split);

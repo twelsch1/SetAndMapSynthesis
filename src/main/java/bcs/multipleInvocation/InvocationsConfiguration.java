@@ -84,9 +84,9 @@ public class InvocationsConfiguration {
 	}
 	
 	public void removeLastReplacementProgram() {
-		//System.out.println("Removing, size before was " + replacementPrograms.size());
+		////System.out.println("Removing, size before was " + replacementPrograms.size());
 		replacementPrograms.remove(replacementPrograms.size()-1);
-		//System.out.println("Size after is " + replacementPrograms.size());
+		////System.out.println("Size after is " + replacementPrograms.size());
 	}
 	
 	public boolean isDistInvocationsEmpty() {
