@@ -57,6 +57,18 @@ public class BranchwisePredicateSynthesis implements Comparable<BranchwisePredic
 	private ArrayList<String> clauses = new ArrayList<>();
 
 	private int numRuns = 0;
+	
+	private int firstPriority = 0;
+	
+	
+
+	public int getFirstPriority() {
+		return firstPriority;
+	}
+
+	public void setFirstPriority(int firstPriority) {
+		this.firstPriority = firstPriority;
+	}
 
 	public BranchwisePredicateSynthesis(String partial) {
 		this.targetPartial = partial;
@@ -367,7 +379,9 @@ public class BranchwisePredicateSynthesis implements Comparable<BranchwisePredic
 	
 	@Override
 	public int compareTo(BranchwisePredicateSynthesis comp) {
-
+		if (this.getNumRuns() == 0 && comp.getNumRuns() == 0) {
+			return Integer.compare(this.getFirstPriority(), comp.getFirstPriority());
+		}
 		// prioritize the one with fewer runs i.e. to make sure every job gets a turn.
 		return Integer.compare(this.getNumRuns(), comp.getNumRuns());
 

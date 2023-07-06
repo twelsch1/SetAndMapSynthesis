@@ -1,0 +1,10 @@
+(set-logic LIA)
+(synth-fun f ((x Int) (y Int) (z Int) (w Int)) Int)
+(declare-var x Int) (declare-var y Int) 
+(declare-var z Int) (declare-var w Int) 
+(constraint (and (= (f x y z w) (f y x z w)) 
+(=> (distinct z w) (distinct (f x y z w) (f x y w z)))))
+(constraint (or 
+(= (- x 1) (f x y z w)) (= (- y 1) (f x y z w))
+(= (- x 3) (f x y z w)) (= (- y 3) (f x y z w))))
+(check-synth)

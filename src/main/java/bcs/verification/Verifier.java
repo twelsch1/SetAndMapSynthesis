@@ -210,7 +210,7 @@ public class Verifier {
 				verVarNames, synthesisVariableNames, true);
 		
 
-		//System.out.println(verificationString);
+		System.out.println("Final Ver: " + verificationString);
 		try {
 			
 			//run the query
@@ -554,7 +554,7 @@ public class Verifier {
 		String query = VerificationQueries.generateProgramCanSatisfyQuery(program, logic, functionName, functionCallString, 
 				functionDeclarationString, assertionString, partials, definedFunctions, verVarNames, synthesisVariableNames, previousConfigurations);
 		
-		////System.out.println("query " + query);
+		//System.out.println("Can Satisfy query " + query);
 		try(Context ctx = new Context()) {
 			
 			//Initialize solver from context
@@ -590,7 +590,7 @@ public class Verifier {
 				program, logic, functionName, functionCallString, 
 				functionDeclarationString, assertionString, partials, definedFunctions, verVarNames, synthesisVariableNames, eqInvocations, distInvocations,
 				previousConfigurations);
-		//System.out.println(query);
+		//System.out.println("Inter Config " + query);
 		try(Context ctx = new Context()) {
 			
 			//Initialize solver from context
@@ -715,7 +715,7 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 	String query = VerificationQueries.generateConstructDistinctProgramQueryActual(program, eqInvocations, distInvocations, partials, configurations, 
 			logic, functionName, functionCallString, functionDeclarationString, assertionString, definedFunctions, verVarNames, synthesisVariableNames);
 	
-	//System.out.println(query);
+	//System.out.println("Distinct Mock Query for " + program + ": " +query);
 	try(Context ctx = new Context()) {
 		
 		//Initialize solver from context
@@ -774,7 +774,7 @@ public boolean verifyDistinctConfigurationCanSatisfy(String program,
 		String query = VerificationQueries.generateCheckReplacementQuery(configToCheck, partials, configurations, logic, functionName, 
 				functionCallString, functionDeclarationString, assertionString, definedFunctions, verVarNames, synthesisVariableNames);
 				
-		////System.out.println(query);
+		//System.out.println("Replacement Query: " + query);
 		try(Context ctx = new Context()) {
 			
 			//Initialize solver from context

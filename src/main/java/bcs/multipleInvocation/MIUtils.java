@@ -152,7 +152,7 @@ public class MIUtils {
 		ArrayList<InvocationsConfiguration> previousConfigurations = new ArrayList<>();
 		previousConfigurations.add(new InvocationsConfiguration(new ArrayList<ArrayList<String>>(), nonPrincipalInvocations));
 		verifier.setPreviousConfigurations(previousConfigurations);
-
+		
 		while (verifier.verifyProgramCanSatisfy(program, partials.toArray(new String[partials.size()]))) {
 			InvocationsConfiguration nextConfiguration = MIUtils.buildMIConfiguration(program, nonPrincipalInvocations,
 					partials, verifier);
@@ -162,6 +162,7 @@ public class MIUtils {
 
 			possiblePrograms.add(MIUtils.constructInterchangeableProgram(program, nextConfiguration.getEqInvocations(),
 					principalInvocation, predicate));
+			System.out.println("Constructed " + possiblePrograms.get(possiblePrograms.size()-1));
 
 			previousConfigurations.add(nextConfiguration);
 			
@@ -201,6 +202,7 @@ public class MIUtils {
 		
 		for (int i = 0; i < synthVarUnfixedVariables.size()-1; i++) {
 			retVal += " (>= " + synthVarUnfixedVariables.get(i) + " " + synthVarUnfixedVariables.get(i+1) + ")";
+			//retVal += " (> " + synthVarUnfixedVariables.get(i) + " " + synthVarUnfixedVariables.get(i+1) + ")";
 		}
 		
 		retVal += closingParen;
@@ -273,10 +275,12 @@ public class MIUtils {
 				
 				if (!verifier.verifyDistinctConfigurationCanSatisfy(program, eqInvocations, distInvocations, partials, configurations)) {
 					eqInvocations.remove(eqInvocations.size()-1);
+					//eqInvocations.remov
 					distInvocations.add(inv);
 				}
 			}
 			
+			//System.out.println(program);
 			configurations.add(new InvocationsConfiguration(program, eqInvocations, distInvocations));
 
 		}
@@ -324,14 +328,12 @@ public class MIUtils {
 		}
 		
 		extracted = MIUtils.interchangeableProgramExtraction(extracted, verifier, nonPrincipalInvocations, variablesList);
-		for (String s: extracted) {
-			//System.out.println(s);
-		}
 		
+
 		if (verifier.verifyMIPartials(extracted, possiblePrograms, null)) {
 			
-		  String[] pre =  verifier.MIReduceToNecessarySet(extracted, possiblePrograms);
-		  //return pre;
+		  return  verifier.MIReduceToNecessarySet(extracted, possiblePrograms);
+/*
 		 
 		  String[] retVal = new String[pre.length];
 		  
@@ -339,12 +341,14 @@ public class MIUtils {
 		 
 		  int j = 0;
 		  for (int i = pre.length-1; i >= 0; i--) {
-			  retVal[j] = pre[i];
+			  System.out.println("Included " + MIUtils.transformProgramFromTempVarsToInvocation(pre[i], variablesList));
+			  //retVal[j] = pre[i];
+			  retVal[i] = pre[i];
 			  j++;
 		  }
 		 
-		  
-		  return retVal;
+		//  return pre;
+		  return retVal;*/
 
 			
 		}
@@ -352,25 +356,29 @@ public class MIUtils {
 
 		ArrayList<InvocationsConfiguration> configurations = new ArrayList<>();
 		do {
+			System.out.println("Looping");
 			MIUtils.distinctConfigurationExtraction(extracted, configurations, verifier, nonPrincipalInvocations,
 					variablesList);
 		} while (!verifier.verifyMIPartials(extracted, possiblePrograms,configurations));
 		
 
 		verifier.MIReduceToNecessaryConfigurations(extracted, possiblePrograms, configurations);
+		//System.out.println("mocks constructed");
 		MIUtils.distinctProgramExtraction(configurations, extracted, variablesList, verifier);
 		
-		  String[] pre =  verifier.MIReduceToNecessarySet(extracted, possiblePrograms);
+		  return verifier.MIReduceToNecessarySet(extracted, possiblePrograms);
 		  
+		  /*
 		  String[] retVal = new String[pre.length];
 		  
 		  int j = 0;
 		  for (int i = pre.length-1; i >= 0; i--) {
+			  //System.out.println("Included " + pre[i]);
 			  retVal[j] = pre[i];
 			  j++;
-		  }
+		  }*/
 		  
-		  return retVal;
+		  //return retVal;
 		//return verifier.MIReduceToNecessarySet(extracted);
 	}
 	
@@ -506,8 +514,7 @@ public class MIUtils {
 					programsFoundSoFar.add(eligiblePrograms.get(i));
 					////System.out.println("Success");
 					break;
-				} else {
-				}
+				} 
 				
 				ic.removeLastReplacementProgram();
 			}

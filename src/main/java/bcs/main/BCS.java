@@ -73,7 +73,6 @@ public class BCS {
 		verifier.setSynthType("program");
 		verifier.setSynthesisVariableNames(benchmark.getSynthesisVariableNames());
 		
-		
 		//Initial attempt at synthesis, returns a set of jobs that have correct mappings or null if synthesis times out
 		ArrayList<BranchwisePredicateSynthesis> completedJobs = synthesizeFinalProgram(predicateSynthesizer, benchmark, partials, maxThreads, start, timeout, emulateSTUN,skip, "",
 				sp.getPctOfPositives(),verifySuccess, sp.getBranchwiseMode());
@@ -181,6 +180,14 @@ public class BCS {
 		Instant end = Instant.now();
 		Duration timeElapsed = Duration.between(start, end);
 		
+		
+		String[] variables = benchmark.getVariableNames();
+		ArrayList<String> variablesList = new ArrayList<>();
+		for (int i = 0; i < variables.length; i++) {
+			variablesList.add(variables[i]);
+		}
+		
+		finalProgram = MIUtils.transformProgramFromTempVarsToInvocation(finalProgram, variablesList);
 		return new SynthesisResult(successful,finalProgram,timeElapsed.toSeconds());
 	
 		
@@ -440,6 +447,8 @@ public class BCS {
 		for (int i = 0; i < correctPrograms.length; i++) {
 			BranchwisePredicateSynthesis rmpj = new BranchwisePredicateSynthesis(
 					correctPrograms[i]);
+			//rmpj.set
+			rmpj.setFirstPriority(i);
 			predicateJobs.add(rmpj);
 		}
 		

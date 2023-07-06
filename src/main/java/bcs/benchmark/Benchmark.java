@@ -17,6 +17,7 @@ import bcs.utils.Utils;
  */
 public class Benchmark {
 
+	private String fullFile;
 	private String functionName;
 	private String assertionString;
 	private String funString;
@@ -108,10 +109,22 @@ public class Benchmark {
 	public void setFunctionVariableTypes(String[] functionVariableTypes) {
 		this.functionVariableTypes = functionVariableTypes;
 	}
+	
+	
+
+	public String getFullFile() {
+		return fullFile;
+	}
+
+	public void setFullFile(String fullFile) {
+		this.fullFile = fullFile;
+	}
 
 	public static Benchmark parseBenchmark(String filename) throws Exception {
 		File file = new File(filename);
 		String fileContent = Files.readString(file.toPath());
+		
+		String fullFile = fileContent;
 		
 		
 		
@@ -268,6 +281,7 @@ public class Benchmark {
 		b.setFunctionVariables(functionVariables.toArray(new String[functionVariables.size()]));
 		b.setFunctionVariableTypes(functionVariableTypes.toArray(new String[functionVariableTypes.size()]));
 		b.setConstants(constants);
+		b.setFullFile(fullFile);
 		
 		String[] extractionVariableNames = new String[b.getVariableNames().length];
 		for (int i = 0; i < b.getVariableNames().length; i++) {

@@ -163,7 +163,7 @@ public class CVCPredicateSynthesizer extends Synthesizer {
 			//process = new ProcessBuilder(cvcLocation, "-L", "sygus", "--sygus-si", "all", "sygus-out"
 				//	.start();
 			
-			process = new ProcessBuilder(cvcLocation, "-L", "sygus2", "--sygus-si", "all", "--sygus-out", "status-and-def")
+			process = new ProcessBuilder(cvcLocation, "-L", "sygus2", "--sygus-si", "all", "--sygus-out", "status-and-def", "--tlimit", "3600000")
 					.start();
 
 
@@ -172,7 +172,7 @@ public class CVCPredicateSynthesizer extends Synthesizer {
 			String query = buildCVCQuery(verifier.getTargetPartial(), benchmark, verifier.getRemainingPartials(), verifier.getGlobalConstraints());
 			
 
-			//System.out.println(query);
+			System.out.println(query);
 			try (Writer w = new OutputStreamWriter(process.getOutputStream(), "UTF-8")) {
 			//	System.out.println("FIRE!");
 				w.write(query);
@@ -203,6 +203,8 @@ public class CVCPredicateSynthesizer extends Synthesizer {
 				if (!cvcResponse.isEmpty()) {
 
 				program = cvcResponse.substring(cvcResponse.lastIndexOf("Bool") + 4, cvcResponse.length() - 2).trim();
+				System.out.println(verifier.getTargetPartial());
+				System.out.println(program);
 				success = true;
 				
 				}

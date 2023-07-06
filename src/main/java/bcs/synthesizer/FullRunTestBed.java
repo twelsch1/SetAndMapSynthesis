@@ -11,8 +11,8 @@ import bcs.main.SynthesisMethods;
 public class FullRunTestBed {
 
 	public static void main(String[] args) throws Exception {
-		String directory = "src/main/resources/benchmarks/";
-
+		String directory = "src/main/resources/lastCheck/";
+		//String directory = "src/main/resources/benchmarks/";
 
 
 		ArrayList<String> benchmarkNames = new ArrayList<>();
@@ -40,14 +40,17 @@ public class FullRunTestBed {
 
 				System.out.println(benchmarkName);
 				Benchmark benchmark = Benchmark.parseBenchmark(benchmarkName);
-				CVCPredicateSynthesizer synth = new CVCPredicateSynthesizer(benchmark, cvcLocation);
+				CVCPredicateSynthesizer predSynth = new CVCPredicateSynthesizer(benchmark, cvcLocation);
+				CVCSolver synth = new CVCSolver(benchmark, cvcLocation);
 				SynthesisParameters sp = new SynthesisParameters();
 				sp.setMaxThreads(1);
 				sp.setSkipToRepair(true);
 				sp.setBranchwiseMode("CVC");
 				// sp.set
-				SynthesisResult result = SynthesisMethods.runMIProgramExtractionThenPredicateSynthesis(synth, benchmark, sp);
-
+				SynthesisResult result = SynthesisMethods.runMIProgramExtractionThenPredicateSynthesis(predSynth, benchmark, sp);
+				//SynthesisResult result = new SynthesisResult(false, 3600);
+				//SynthesisResult result = SynthesisMethods.CVC5Direct(synth, benchmark);
+				//SynthesisResult result = new SynthesisResult(false,"",3600);
 				results += benchmarkName + "," + result.asResultString() + "\n";
 				
 				System.out.println("Successful?: " + (result.isSuccessful() ? "Yes" : "No"));
@@ -57,7 +60,7 @@ public class FullRunTestBed {
 				}
 				System.out.println("Time taken: " + result.getTimeTaken() + " seconds");
 
-				BufferedWriter writer = new BufferedWriter(new FileWriter("results" + i + ".csv"));
+				BufferedWriter writer = new BufferedWriter(new FileWriter("multipleinvocation" + ".csv"));
 				writer.write(results);
 
 				writer.close();

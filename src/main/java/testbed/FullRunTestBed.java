@@ -16,7 +16,7 @@ import evoSynthesis.GPPredicateSynthesizer;
 public class FullRunTestBed {
 
 	public static void main(String[] args) throws Exception {
-		String directory = "src/main/resources/checkBenchmarks/";
+		String directory = "src/main/resources/thatOne/";
 
 
 
@@ -39,12 +39,12 @@ public class FullRunTestBed {
 		for (int i = start; i <= numTrials; i++) {
 			String results = "Benchmark,Successful,Time Taken,Program Found,Program Length\n";
 
-			//System.out.println("Number of benchmarks to synthesize: " + sz);
+			System.out.println("Number of benchmarks to synthesize: " + sz);
 			for (int j = 0; j < sz; j++) {
 
 				String benchmarkName = benchmarkNames.get(j);
 
-				//System.out.println(benchmarkName);
+				System.out.println(benchmarkName);
 				Benchmark benchmark = Benchmark.parseBenchmark(benchmarkName);
 				
 				String[] synthesisVariableNames = new String[benchmark.getVariableNames().length];
@@ -60,20 +60,22 @@ public class FullRunTestBed {
 				Synthesizer predicateSynthesizer = new GPPredicateSynthesizer(paramFile, benchmark);
 				SynthesisParameters sp = new SynthesisParameters();
 				sp.setMaxThreads(1);
+				sp.setTimeout(180);
 				//sp.setBranchwiseMode("CBPS");
 				
-				SynthesisResult result = SynthesisMethods.runProgramExtractionThenPredicateSynthesis(
-						partialsSynthesizer, predicateSynthesizer, benchmark, sp);
+				//SynthesisResult result = SynthesisMethods.runProgramExtractionThenPredicateSynthesis(
+					//	partialsSynthesizer, predicateSynthesizer, benchmark, sp);
+				SynthesisResult result = SynthesisMethods.runPartialThenPredicateSynthesis(partialsSynthesizer, predicateSynthesizer, benchmark);
 
 				results += benchmarkName + "," + result.asResultString() + "\n";
-				//System.out.println("Successful?: " + (result.isSuccessful() ? "Yes" : "No"));
+				System.out.println("Successful?: " + (result.isSuccessful() ? "Yes" : "No"));
 				if (result.isSuccessful()) {
-					//System.out.println("Program found: " + result.getProgramFound());
-					//System.out.println("Program Length: " + result.getProgramFound().length());
+					System.out.println("Program found: " + result.getProgramFound());
+					System.out.println("Program Length: " + result.getProgramFound().length());
 				}
-				//System.out.println("Time taken: " + result.getTimeTaken() + " seconds");
+				System.out.println("Time taken: " + result.getTimeTaken() + " seconds");
 
-				BufferedWriter writer = new BufferedWriter(new FileWriter("results" + i + ".csv"));
+				BufferedWriter writer = new BufferedWriter(new FileWriter("thatOne" + i + ".csv"));
 				writer.write(results);
 
 				writer.close();

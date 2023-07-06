@@ -87,6 +87,9 @@ public abstract class Node {
 		//gets the function operator and/or the constant/variable
 		String funcType = Utils.scanToSpace(program);
 		
+		//System.out.println("func " + funcType);
+		
+		
 		////System.out.println(funcType);
 		int numChildren = 0;
 		
@@ -157,6 +160,7 @@ public abstract class Node {
 			String type = "int";
 			if (function.equals("iteB") || function.equals("or3") || function.equals("im")) {
 				type = "boolean";
+			//	System.out.println("Well well well");
 			}
 			node = new DefinedFunction(function, type);
 			numChildren = Node.countChildren(program, funcType.length() + 1);
@@ -164,14 +168,18 @@ public abstract class Node {
 			node = new Ephemeral(Integer.parseInt(funcType));
 		}
 
+		//System.out.println("Number of children : " + numChildren);
 		//set node's child list to be number of children;
 		node.children = new Node[numChildren];
 
 		//use to move up in the string past this function onto its children
 		int idx = funcType.length() + 1;
+		
+
 		for (int i = 0; i < numChildren; i++) {
 			//extract the next function and then call recursively, then move the index up length of that function plus 1 for the space
 			String nextFunction = Utils.extractNextFunction(program.substring(idx));
+			//System.out.println("Number of children was " + numChildren + "next function is " + nextFunction);
 			node.children[i] = buildNodeFromProgramString(nextFunction, definedFunctions);
 			
 			idx += nextFunction.length() + 1;

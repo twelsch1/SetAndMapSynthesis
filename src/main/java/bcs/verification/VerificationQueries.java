@@ -1257,7 +1257,7 @@ public class VerificationQueries {
 		//Assert that the target function is NOT satisfiable on the reduced input space
 		retVal += "(assert (not " + assertionString + "))\n";
 		
-		//Assert that the target function equals the program for the default function call string where it is orderd the same as variables encountered. 
+		//Assert that the target function equals the program for the default function call string where it is ordered the same as variables encountered. 
 		
 		retVal += "(assert (or ";
 		for (int i = 0; i < programsSoFar.size(); i++) {
@@ -1291,8 +1291,10 @@ public class VerificationQueries {
 			
 			for (ArrayList<String> inv : distInvs) {
 				String invocationString = buildInvocationString(inv, functionName);
+				//retVal += "(distinct " + invocationString + " "
+					//	+ MIUtils.transformProgramFromTempVarsToInvocation(principalProgram, inv) + ")\n";
 				retVal += "(distinct " + invocationString + " "
-						+ MIUtils.transformProgramFromTempVarsToInvocation(principalProgram, inv) + ")\n";
+					+ principalProgram + ")\n";
 			}
 			
 			for (int j = 0; j < repInvs.size(); j++) {
@@ -1382,8 +1384,9 @@ public class VerificationQueries {
 			}
 			invocationString += ")";
 
-			String prog = MIUtils.transformProgramFromTempVarsToInvocation(program, inv);
-
+			//String prog = MIUtils.transformProgramFromTempVarsToInvocation(program, inv);
+			//String prog = MIUtils.tans
+			String prog = program;
 			retVal += "(assert (distinct " + invocationString + " " + prog + "))\n";
 
 		}
@@ -1658,8 +1661,11 @@ public class VerificationQueries {
 					}
 					invocationString += ")";
 
+					//retVal += "(assert (distinct " + invocationString + " "
+						//	+ MIUtils.transformProgramFromTempVarsToInvocation(p, inv) + "))\n";
+
 					retVal += "(assert (distinct " + invocationString + " "
-							+ MIUtils.transformProgramFromTempVarsToInvocation(p, inv) + "))\n";
+							+ p + "))\n";
 				}
 				
 				retVal += "(assert (not " + assertionString.replace(parPattern, parPattern + "_config_" + i) + "))\n";

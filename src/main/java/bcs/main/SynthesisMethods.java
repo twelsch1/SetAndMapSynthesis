@@ -49,6 +49,26 @@ public class SynthesisMethods {
 		}
 	}
 	
+	public static SynthesisResult CVC5Direct(Synthesizer synthesizer, Benchmark benchmark) {
+		Verifier verifier = new Verifier(benchmark.getFunctionName(),
+				benchmark.getVariableNames(), null, benchmark.getFunString(), benchmark.getAssertionString(), "LIA",
+				null);
+		
+		Instant start = Instant.now();
+		SynthesisResult sr = synthesizer.synthesize(verifier);
+
+		Instant end = Instant.now();
+
+		Duration timeElapsed = Duration.between(start, end);
+		
+		if (sr.isSuccessful()) {
+		
+		return new SynthesisResult(true, sr.getProgramFound(), timeElapsed.toSeconds());
+		} else {
+			return new SynthesisResult(false, "",3600);
+		}
+		
+	}
 	public static SynthesisResult runPartialThenPredicateSynthesis(Synthesizer partialsSynthesizer, Synthesizer predicateSynthesizer, Benchmark benchmark) throws Exception {	
 		SynthesisParameters sp = new SynthesisParameters();
 		return runPartialThenPredicateSynthesis(partialsSynthesizer,predicateSynthesizer,benchmark,sp);
@@ -190,22 +210,26 @@ public class SynthesisMethods {
 		
 		benchmark.setSynthesisVariableNames(extractionVariableNames);
 		correctPrograms =  MIUtils.automaticSatisfyingSetConstruction(benchmark);
+		
+	//	System.out.println("Assembled");
 		//benchmark.setSynthesisVariableNames(userSynthesisVariableNames);
 		
-		for (int i = 0; i < correctPrograms.length; i++) {
-			//System.out.println(correctPrograms[i]);
-		}
 		/*if (correctPrograms == null) {
 			////System.out.println("Hello");
 			correctPrograms = SplitAndConquer.SCGPDiscovery(partialsSynthesizer, benchmark, sp);
 		}*/
 		
+		String[] variables = benchmark.getVariableNames();
+		ArrayList<String> variablesList = new ArrayList<>();
+		for (int i = 0; i < variables.length; i++) {
+			variablesList.add(variables[i]);
+		}
 		
 		if (correctPrograms.length == 1) {
 			Instant end = Instant.now();
 			Duration timeElapsed = Duration.between(start, end);
 			
-			String finalProgram = correctPrograms[0];
+			String finalProgram = MIUtils.transformProgramFromTempVarsToInvocation(correctPrograms[0], variablesList);
 			for (int i = 0; i < benchmark.getVariableNames().length; i++) {
 				finalProgram = finalProgram.replace(extractionVariableNames[i], benchmark.getVariableNames()[i]);
 			}
@@ -395,7 +419,7 @@ public static String[] directProgramExtractionRedux(Benchmark benchmark) {
 			}
 		}
 		
-		////System.out.println(assertionString);
+		//System.out.println(assertionString);
 		Node constraintsAsProg = Node.buildNodeFromProgramString(assertionString, definedFunctionsSet);
 		ArrayList<String> correctTerms = constraintsAsProg.extractPossibleIntProgramsPlusMinusOne();
 		

@@ -11,7 +11,7 @@ gp.fs.0.name = f0
 pop.subpop.0.size = 2500
 
 #Remember to reset to 25
-generations = 10 
+generations = 25 
 evalthreads = 1
 verificationthreads = 1
 breedthreads = 1

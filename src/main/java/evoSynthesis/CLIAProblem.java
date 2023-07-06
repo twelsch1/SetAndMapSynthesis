@@ -127,7 +127,7 @@ public class CLIAProblem extends GPProblem implements SimpleProblemForm  {
                trials.add(trialFitness);
 		       hits += hit;
 		       sum += result;
-	    	   if ((synthType.equals("predicate") || synthType.equals("MIPred")) && expectedResult == 1) {
+	    	   if (synthType.equals("predicate") && expectedResult == 1) {
 	    		   positiveSum += result;
 	    	   } else if (synthType.equals("predicate") && expectedResult == 0) {
 	    		   negativeSum += result;
@@ -140,7 +140,7 @@ public class CLIAProblem extends GPProblem implements SimpleProblemForm  {
 		   int numNegatives = ceManager.countNegatives();
 		   int numPositives = ceManager.countPositives();
 		   
-		   if ((synthType.equals("predicate") || synthType.equals("MIPred")) && numPositives > 0 && numNegatives > 0) {
+		   if (synthType.equals("predicate") && numPositives > 0 && numNegatives > 0) {
 
 			   //if perfect, (numPositives - positiveSum)/numPositives = 1, so we subtract that from 1
 			   //as 0 means ideal while higher means worse for standardizedFitness.

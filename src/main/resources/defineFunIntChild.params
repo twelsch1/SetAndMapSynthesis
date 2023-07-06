@@ -11,11 +11,11 @@ pop.subpop.0.size = 2500
 
 
 #generations = 50
-generations = 5
-evalthreads = 2
-verificationthreads = 2
+generations = 25
+evalthreads = 1
+verificationthreads = 1
 breedthreads = 1
-silent=false
+silent=true
 
 
 #select.tournament.size = 7

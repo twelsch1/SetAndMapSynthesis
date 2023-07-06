@@ -140,7 +140,7 @@ public class CVC4TestBed {
 			query = query.replace("tmpvar" + (i + 1) + ";", benchmark.getFunctionVariables()[i]);
 		}
 
-		// //System.out.println(query);
+		System.out.println(query);
 		return query;
 	}
 
@@ -182,8 +182,8 @@ public class CVC4TestBed {
 	}*/
 	
 	public static void main(String[] args) throws Exception {
-		String benchmarkFile = "src/main/resources/benchmarks/fg_array_sum_10_15.sl";
-		//String benchmarkFile = "src/main/resources/benchmarks/darkOne.sl";
+		//String benchmarkFile = "src/main/resources/thatOne/mi_explainer.sl";
+		String benchmarkFile = "src/main/resources/benchmarks/distinctOne.sl";
 		Benchmark benchmark = Benchmark.parseBenchmark(benchmarkFile);
 		//String cvcLocation = "C:\\Users\\twels\\Documents\\CVC4\\cvc4-1.7-win64-opt.exe";
 		//String cvcLocation = "C:\\Users\\twels\\Documents\\CVC4\\cvc4-1.8-win64-opt.exe";
@@ -203,12 +203,12 @@ public class CVC4TestBed {
 		//String[] correctPrograms = buildMIStrings();
 		//SynthesisResult result = SynthesisMethods.runPredicateSynthesis(correctPrograms, predicateSynthesizer, benchmark, sp);
 		
-		//System.out.println("Successful?: " + (result.isSuccessful() ? "Yes" : "No"));
+		System.out.println("Successful?: " + (result.isSuccessful() ? "Yes" : "No"));
 		if (result.isSuccessful()) {
-			//System.out.println("Program found: " + result.getProgramFound());
-			//System.out.println(result.getProgramFound().length());
+			System.out.println("Program found: " + result.getProgramFound());
+			System.out.println(result.getProgramFound().length());
 		}
-		//System.out.println("Time taken: " + result.getTimeTaken() + " seconds");
+		System.out.println("Time taken: " + result.getTimeTaken() + " seconds");
 		
 	}
 }
