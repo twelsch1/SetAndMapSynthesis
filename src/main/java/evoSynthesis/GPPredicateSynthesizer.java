@@ -6,10 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import bcs.benchmark.Benchmark;
-import bcs.synthesizer.SynthesisResult;
-import bcs.synthesizer.Synthesizer;
-import bcs.verification.Verifier;
 import ec.EvolutionState;
 import ec.Evolve;
 import ec.Individual;
@@ -19,6 +15,10 @@ import ec.util.Parameter;
 import ec.util.ParameterDatabase;
 import ecjSimple.SimpleEvolutionStateWithVerification;
 import fitness.VerifiableFitness;
+import sms.benchmark.Benchmark;
+import sms.synthesizer.SynthesisResult;
+import sms.synthesizer.Synthesizer;
+import sms.verification.Verifier;
 
 public class GPPredicateSynthesizer extends Synthesizer {
 	
@@ -78,7 +78,7 @@ public class GPPredicateSynthesizer extends Synthesizer {
 
 		boolean synthSuccessful = false;
 		
-		////System.out.println("Running GP");
+		//////System.out.println("Running GP");
 		ParameterDatabase dbase = setupDatabase(paramFile,runConfig,benchmark);
 		
 		SimpleEvolutionStateWithVerification evaluatedState = (SimpleEvolutionStateWithVerification) Evolve.initialize(dbase, -1);

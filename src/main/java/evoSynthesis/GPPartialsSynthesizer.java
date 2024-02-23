@@ -6,13 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import bcs.benchmark.Benchmark;
-import bcs.optional.Splitter;
-import bcs.synthesizer.SynthesisResult;
-import bcs.synthesizer.Synthesizer;
-import bcs.utils.Utils;
-import bcs.verification.CounterExample;
-import bcs.verification.Verifier;
 import ec.EvolutionState;
 import ec.Evolve;
 import ec.Individual;
@@ -22,6 +15,13 @@ import ec.util.Parameter;
 import ec.util.ParameterDatabase;
 import ecjSimple.SimpleEvolutionStateWithVerification;
 import fitness.VerifiableFitness;
+import sms.benchmark.Benchmark;
+import sms.optional.Splitter;
+import sms.synthesizer.SynthesisResult;
+import sms.synthesizer.Synthesizer;
+import sms.utils.Utils;
+import sms.verification.CounterExample;
+import sms.verification.Verifier;
 
 public class GPPartialsSynthesizer extends Synthesizer {
 	
@@ -138,11 +138,11 @@ public class GPPartialsSynthesizer extends Synthesizer {
 			foundCounterExamples = fe.getFoundCounterExamples();
 		
 		} else {
-			//////System.out.println("Correct program found")
+			////////System.out.println("Correct program found")
 			successful = true;
 		}
 		
-		//System.out.println("Best program found: " + bestProgram);
+		////System.out.println("Best program found: " + bestProgram);
 
 		if (!successful) {
 			if (Utils.programHasIte(bestProgram)) {
@@ -155,7 +155,7 @@ public class GPPartialsSynthesizer extends Synthesizer {
 
 		}
 		
-		//System.out.println("Split is: " + split);
+		////System.out.println("Split is: " + split);
 		
 		Evolve.cleanup(evaluatedState);
 		return new SynthesisResult(successful,bestProgram,split);

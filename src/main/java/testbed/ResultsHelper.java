@@ -39,7 +39,7 @@ public class ResultsHelper {
 		boolean buildFileNames = true;
 		//int i = 0;
 		for (File file : files) {
-			////System.out.println(Files.readString(file.toPath()));
+			//////System.out.println(Files.readString(file.toPath()));
 			List<String> rows = Files.readAllLines(file.toPath());
 			rows.remove(0);
 			for (int j = 0; j < rows.size(); j++) {
@@ -56,7 +56,7 @@ public class ResultsHelper {
 				s.next();
 				times.get(j).add(s.nextInt());
 				
-				////System.out.println(s.nextInt());
+				//////System.out.println(s.nextInt());
 			}
 			
 			buildFileNames = false;
@@ -72,11 +72,11 @@ public class ResultsHelper {
 			medians.add(median);
 			
 		}
-		//System.out.println(maxes.size());
-		//System.out.println(names.size());
+		////System.out.println(maxes.size());
+		////System.out.println(names.size());
 		String resultsAsCSV = "benchmark,max,median\n";
 		for (int i = 0; i < maxes.size(); i++) {
-			//System.out.println(names.get(i) + "," + maxes.get(i) + "," + medians.get(i));
+			////System.out.println(names.get(i) + "," + maxes.get(i) + "," + medians.get(i));
 			resultsAsCSV += names.get(i) + "," + maxes.get(i) + "," + medians.get(i) + "\n";
 		}
 		

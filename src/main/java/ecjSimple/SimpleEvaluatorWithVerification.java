@@ -218,7 +218,7 @@ public class SimpleEvaluatorWithVerification extends Evaluator
 
             prob = (SimpleProblemForm)(p_problem);  // just use the prototype
             
-           // //System.out.println("Is this being reached?");
+           // ////System.out.println("Is this being reached?");
             ((CLIAProblem)prob).preEvaluation(state,0);
         	
 
@@ -371,9 +371,9 @@ public class SimpleEvaluatorWithVerification extends Evaluator
                         
                 numinds[subpop] = count;
                 from[subpop] = start;
-               // //System.out.println("Pre Gen");
+               // ////System.out.println("Pre Gen");
                 evalPopChunk(state, numinds, from, threadnum, prob);
-                ////System.out.println("Post Gen");
+                //////System.out.println("Post Gen");
                 }
             
 

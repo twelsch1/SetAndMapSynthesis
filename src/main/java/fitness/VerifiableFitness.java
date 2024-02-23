@@ -2,8 +2,8 @@ package fitness;
 
 import java.util.ArrayList;
 
-import bcs.verification.CounterExample;
 import ec.gp.koza.KozaFitness;
+import sms.verification.CounterExample;
 
 public class VerifiableFitness extends KozaFitness {
 

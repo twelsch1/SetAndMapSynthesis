@@ -12,13 +12,6 @@ import java.util.concurrent.Executors;
 
 import com.microsoft.z3.Status;
 
-import bcs.optional.CounterExamplesManager;
-import bcs.optional.VerificationCallable;
-import bcs.verification.CounterExample;
-import bcs.verification.VerificationCallParameters;
-import bcs.verification.VerificationException;
-import bcs.verification.VerificationResult;
-import bcs.verification.Verifier;
 import datatypes.IntData;
 import ec.EvolutionState;
 import ec.Fitness;
@@ -30,6 +23,13 @@ import ec.simple.SimpleProblemForm;
 import ec.util.Parameter;
 import ecjSimple.SimpleEvolutionStateWithVerification;
 import fitness.VerifiableFitness;
+import sms.optional.CounterExamplesManager;
+import sms.optional.VerificationCallable;
+import sms.verification.CounterExample;
+import sms.verification.VerificationCallParameters;
+import sms.verification.VerificationException;
+import sms.verification.VerificationResult;
+import sms.verification.Verifier;
 
 
 @SuppressWarnings("serial")
@@ -192,7 +192,7 @@ public class CLIAProblem extends GPProblem implements SimpleProblemForm  {
 					callsMade++;
 					VerificationResult vr = verifier.verify(program);
 					if (vr.getStatus() == Status.UNSATISFIABLE) {
-						////System.out.println("Found perfect program");
+						//////System.out.println("Found perfect program");
 						f.setVerified(true);
 						return true;
 					} else if (vr.getStatus() == Status.SATISFIABLE) {
@@ -201,9 +201,9 @@ public class CLIAProblem extends GPProblem implements SimpleProblemForm  {
 						throw vr.getException();
 					}
 				} catch (VerificationException e) {
-					////System.out.println(e.toString());
+					//////System.out.println(e.toString());
 				} catch (Exception e) {
-					////System.out.println(e.toString());
+					//////System.out.println(e.toString());
 				}
     		}
     		i++;
@@ -248,7 +248,7 @@ public class CLIAProblem extends GPProblem implements SimpleProblemForm  {
 			// if add is true, then we go until we have generated the max tests allowed per
 			// generation or hit our maximum attempts
 			while (add && i < individuals.size() && attempts < maxAttempts && numCounterExamplesFound < maxTestsAllowed) {
-				////System.out.println("hi");
+				//////System.out.println("hi");
 				if (activeThreads == threads) {
 					VerificationResult vr = null;
 					try {
@@ -259,14 +259,14 @@ public class CLIAProblem extends GPProblem implements SimpleProblemForm  {
 
 						} else if (vr.getStatus() == Status.UNKNOWN && vr.getException() != null) {
 							//vr.getException().printStackTrace();
-							////System.out.println(vr.getException().getMessage());
+							//////System.out.println(vr.getException().getMessage());
 						}
 						
 					} catch (InterruptedException e) {
 						throw e;
 					} catch (ExecutionException e) {
 						e.printStackTrace();
-						//System.out.println(e.getMessage());
+						////System.out.println(e.getMessage());
 					}
 					
 
@@ -342,9 +342,9 @@ public class CLIAProblem extends GPProblem implements SimpleProblemForm  {
 	    			numCounterExamplesFound += ceManager.appendToCounterExamples(vr.getCounterExample()) ? 1 : 0;
 	    		} 
 			} catch (VerificationException e) {
-				////System.out.println(e.toString());
+				//////System.out.println(e.toString());
 			} catch (Exception e) {
-				////System.out.println(e.toString());
+				//////System.out.println(e.toString());
 			}
     		
     		
@@ -359,13 +359,13 @@ public class CLIAProblem extends GPProblem implements SimpleProblemForm  {
 
 		if (doVerification) {
 			if (state.generation == 0) {
-				////System.out.println("Kick off for new GP process, let's get some CounterExamples");
+				//////System.out.println("Kick off for new GP process, let's get some CounterExamples");
 				ArrayList<Individual> individuals = new ArrayList<>();
 				individuals.addAll(state.population.subpops.get(0).individuals);
 				try {
 					verifyPopulation(individuals, true, initialTests,verificationNumThreads);
 				} catch (InterruptedException e) {
-					//System.out.println("Apparently here");
+					////System.out.println("Apparently here");
 					SimpleEvolutionStateWithVerification st = (SimpleEvolutionStateWithVerification) state;
 					st.setInterrupted(true);
 				}
@@ -399,7 +399,7 @@ public class CLIAProblem extends GPProblem implements SimpleProblemForm  {
 						verifyPopulation(individuals, state.generation % verificationFrequency == 0, maxTestsPerGeneration,
 								verificationNumThreads);
 					} catch (InterruptedException e) {
-						////System.out.println("Got here");
+						//////System.out.println("Got here");
 						SimpleEvolutionStateWithVerification st = (SimpleEvolutionStateWithVerification) state;
 						st.setInterrupted(true);
 					}
@@ -412,10 +412,10 @@ public class CLIAProblem extends GPProblem implements SimpleProblemForm  {
 			}
 
 			/*if (synthType.equals("predicate")) {
-				//System.out.println("Positive Tests: " + ceManager.countPositives());
-				//System.out.println("Negative Tests: " + ceManager.countNegatives());
+				////System.out.println("Positive Tests: " + ceManager.countPositives());
+				////System.out.println("Negative Tests: " + ceManager.countNegatives());
 			} else {
-				//System.out.println("Total Tests: " + ceManager.countCounterExamples());
+				////System.out.println("Total Tests: " + ceManager.countCounterExamples());
 			}*/
 		}
 

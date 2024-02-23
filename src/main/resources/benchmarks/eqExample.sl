@@ -5,7 +5,7 @@
 (declare-var a1 Int) (declare-var a2 Int)
 (declare-var x1 Int) (declare-var x2 Int) (declare-var x3 Int)
 
-(constraint (iteB (>= a1 a2)
+(constraint (iteB (= a1 1)
 (and (= (f a1 a2  x1 x2 x3) (f a1 a2  x1 x3 x2))
 (= (f a1 a2  x1 x2 x3) (f a1 a2  x2 x1 x3))
 (= (f a1 a2  x1 x2 x3) (f a1 a2  x2 x3 x1)) 

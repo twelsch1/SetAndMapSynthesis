@@ -1,10 +1,10 @@
 package ecjSimple;
 
-import bcs.verification.Verifier;
 import ec.EvolutionState;
 import ec.Individual;
 import ec.Subpopulation;
 import ec.util.Checkpoint;
+import sms.verification.Verifier;
 
 /* 
  * SimpleEvolutionState.java

@@ -38,4 +38,11 @@
 )
 )
 
+(constraint
+(=> (<= (f a1 a2 x1 x2 x3) (f a1 a2 x2 x1 x3))
+(= (f a1 a2 x1 x2 x3) (f a1 a2 x2 x1 x3))
+))
+
+
+
 (check-synth)

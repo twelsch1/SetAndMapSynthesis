@@ -135,7 +135,7 @@ public class ParamsHelper {
 		//Add function set to the database
 		dbase.set(new Parameter("gp.fs.0.size"), Integer.toString(functions.size()));
 		for (int i = 0; i < functions.size(); i++) {
-			////System.out.println(functions.get(i));
+			//////System.out.println(functions.get(i));
 			dbase.set(new Parameter("gp.fs.0.func."+i), functions.get(i));
 			dbase.set(new Parameter("gp.fs.0.func."+i+".nc"), functionTypes.get(i));
 		}

@@ -1,0 +1,26 @@
+Benchmark,Successful,Time Taken,Program Length
+src\main\resources\DetSMSBenchmarks\diff.sl,true,1,254
+src\main\resources\DetSMSBenchmarks\eqExampleEasy.sl,true,13,5842
+src\main\resources\DetSMSBenchmarks\eqExampleSimplified.sl,true,8,8396
+src\main\resources\DetSMSBenchmarks\eqSub.sl,true,4,3642
+src\main\resources\DetSMSBenchmarks\fullEqExample.sl,true,19,9535
+src\main\resources\DetSMSBenchmarks\large.sl,true,0,218
+src\main\resources\DetSMSBenchmarks\large_linear_func.sl,true,0,286
+src\main\resources\DetSMSBenchmarks\linearSymmetry2.sl,true,2,3944
+src\main\resources\DetSMSBenchmarks\linearSymmetry3.sl,true,5,12808
+src\main\resources\DetSMSBenchmarks\linearSymmetry4.sl,true,12,29407
+src\main\resources\DetSMSBenchmarks\linearSymmetry5.sl,true,18,55574
+src\main\resources\DetSMSBenchmarks\linearSymmetry6.sl,true,30,92344
+src\main\resources\DetSMSBenchmarks\linearSymmetry7.sl,true,41,145863
+src\main\resources\DetSMSBenchmarks\linearSymmetry8.sl,true,56,215271
+src\main\resources\DetSMSBenchmarks\linearSymmetry9.sl,true,80,300354
+src\main\resources\DetSMSBenchmarks\multiGroupSanityCheck.sl,true,3,1677
+src\main\resources\DetSMSBenchmarks\small.sl,true,0,274
+src\main\resources\DetSMSBenchmarks\smallOrLarge.sl,true,1,1928
+src\main\resources\DetSMSBenchmarks\small_linear_func.sl,true,0,322
+src\main\resources\DetSMSBenchmarks\symm3.sl,true,1,567
+src\main\resources\DetSMSBenchmarks\symm3redux.sl,true,2,885
+src\main\resources\DetSMSBenchmarks\UnrealPretransform.sl,true,7,4221
+src\main\resources\DetSMSBenchmarks\zLinearSymmetry10.sl,true,134,409943
+src\main\resources\DetSMSBenchmarks\zLinearSymmetry11.sl,true,183,544081
+src\main\resources\DetSMSBenchmarks\zLinearSymmetry12.sl,true,201,701137

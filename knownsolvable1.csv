@@ -1,0 +1,4 @@
+Benchmark,Successful,Time Taken,Program Found,Program Length
+src\main\resources\cvcSolvableMIBenchmarks\diff.sl,true,15,(ite (<= y x) (- x y) (- y x)),30
+src\main\resources\cvcSolvableMIBenchmarks\large.sl,true,0,(ite (<= y x) y x),18
+src\main\resources\cvcSolvableMIBenchmarks\small.sl,true,0,(ite (<= x y) y x),18
